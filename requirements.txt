@@ -1,0 +1,4 @@
+flask
+pandas
+nba_api
+datetime

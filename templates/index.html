@@ -5,216 +5,380 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA Lineup Analysis</title>
 </head>
+<style>
 
+
+	
+	.main {
+	  margin-left: 211px; /* Same as the width of the sidenav */
+	  padding: 0px 10px;
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+	}
+	
+	.body {
+	  background-color: black;
+	}
+	
+	.sidenav {
+	  height: 100%;
+	  width: 200px;
+	  position: fixed;
+	  z-index: 1;
+	  top: 0;
+	  left: 0;
+	  overflow-x: hidden;
+	  padding-top: 20px;
+	  padding-left: 10px;
+	  border: 2px solid #43FF33;
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+	}
+	
+	.sidenav h1 {
+	  color: #43FF33;
+	  font-family: "Courier New";
+	}
+	
+	.sidenav select {
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+  	  width: 150px;
+
+	}
+	
+	.sidenav input {
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+	  width: 150px;
+	}
+	
+	.sidenav button {
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+	  
+	}
+	
+</style>
 <body>
 
-    <h1>Lineup Analysis</h1>
+	<div class="sidenav">
+		<h1>5-Man Lineup Analyzer</h1>
 
-    <form id="form">
-        Season: 
-		<select name="season" id="season">
-			<option value="2021-22">2021-22</option>
-			<option value="2020-21">2020-21</option>
-			<option value="2019-20">2019-20</option>
-			<option value="2018-19">2018-19</option>
-			<option value="2017-18">2017-18</option>
-			<option value="2016-17">2016-17</option>
-			<option value="2015-16">2015-16</option>
-			<option value="2014-15">2014-15</option>
-		</select>
-		</ br>
-		X-Axis Value: 
-		<select name="statx" id="statx" >
-			<option value="GP">GP</option>
-			<option value="W">W</option>
-			<option value="L">L</option>
-			<option value="W_PCT">W_PCT</option>
-			<option value="MIN">MIN</option>
-			<option value="FGM">FGM</option>
-			<option value="FGA">FGA</option>
-			<option value="FG_PCT">FG_PCT</option>
-			<option value="FG3M">FG3M</option>
-			<option value="FG3A">FG3A</option>
-			<option value="FG3_PCT">FG3_PCT</option>
-			<option value="FTM">FTM</option>
-			<option value="FTA">FTA</option>
-			<option value="FT_PCT">FT_PCT</option>
-			<option value="OREB">OREB</option>
-			<option value="DREB">DREB</option>
-			<option value="REB">REB</option>
-			<option value="AST">AST</option>
-			<option value="TOV">TOV</option>
-			<option value="STL">STL</option>
-			<option value="BLK">BLK</option>
-			<option value="BLKA">BLKA</option>
-			<option value="PF">PF</option>
-			<option value="PFD">PFD</option>
-			<option value="PTS">PTS</option>
-			<option value="PLUS_MINUS">PLUS_MINUS</option>
-			<option value="GP_RANK">GP_RANK</option>
-			<option value="W_RANK">W_RANK</option>
-			<option value="L_RANK">L_RANK</option>
-			<option value="W_PCT_RANK">W_PCT_RANK</option>
-			<option value="MIN_RANK">MIN_RANK</option>
-			<option value="FGM_RANK">FGM_RANK</option>
-			<option value="FGA_RANK">FGA_RANK</option>
-			<option value="FG_PCT_RANK">FG_PCT_RANK</option>
-			<option value="FG3M_RANK">FG3M_RANK</option>
-			<option value="FG3A_RANK">FG3A_RANK</option>
-			<option value="FG3_PCT_RANK">FG3_PCT_RANK</option>
-			<option value="FTM_RANK">FTM_RANK</option>
-			<option value="FTA_RANK">FTA_RANK</option>
-			<option value="FT_PCT_RANK">FT_PCT_RANK</option>
-			<option value="OREB_RANK">OREB_RANK</option>
-			<option value="DREB_RANK">DREB_RANK</option>
-			<option value="REB_RANK">REB_RANK</option>
-			<option value="AST_RANK">AST_RANK</option>
-			<option value="TOV_RANK">TOV_RANK</option>
-			<option value="STL_RANK">STL_RANK</option>
-			<option value="BLK_RANK">BLK_RANK</option>
-			<option value="BLKA_RANK">BLKA_RANK</option>
-			<option value="PF_RANK">PF_RANK</option>
-			<option value="PFD_RANK">PFD_RANK</option>
-			<option value="PTS_RANK">PTS_RANK</option>
-			<option value="PLUS_MINUS_RANK">PLUS_MINUS_RANK</option>
-			<option value="E_OFF_RATING">E_OFF_RATING</option>
-			<option value="OFF_RATING" selected>OFF_RATING</option>
-			<option value="E_DEF_RATING">E_DEF_RATING</option>
-			<option value="DEF_RATING">DEF_RATING</option>
-			<option value="E_NET_RATING">E_NET_RATING</option>
-			<option value="NET_RATING">NET_RATING</option>
-			<option value="AST_PCT">AST_PCT</option>
-			<option value="AST_TO">AST_TO</option>
-			<option value="AST_RATIO">AST_RATIO</option>
-			<option value="OREB_PCT">OREB_PCT</option>
-			<option value="DREB_PCT">DREB_PCT</option>
-			<option value="REB_PCT">REB_PCT</option>
-			<option value="TM_TOV_PCT">TM_TOV_PCT</option>
-			<option value="EFG_PCT">EFG_PCT</option>
-			<option value="TS_PCT">TS_PCT</option>
-			<option value="E_PACE">E_PACE</option>
-			<option value="PACE">PACE</option>
-			<option value="PACE_PER40">PACE_PER40</option>
-			<option value="POSS">POSS</option>
-			<option value="PIE">PIE</option>
-			<option value="OFF_RATING_RANK">OFF_RATING_RANK</option>
-			<option value="DEF_RATING_RANK">DEF_RATING_RANK</option>
-			<option value="NET_RATING_RANK">NET_RATING_RANK</option>
-			<option value="AST_PCT_RANK">AST_PCT_RANK</option>
-			<option value="AST_TO_RANK">AST_TO_RANK</option>
-			<option value="AST_RATIO_RANK">AST_RATIO_RANK</option>
-			<option value="OREB_PCT_RANK">OREB_PCT_RANK</option>
-			<option value="DREB_PCT_RANK">DREB_PCT_RANK</option>
-			<option value="REB_PCT_RANK">REB_PCT_RANK</option>
-			<option value="TM_TOV_PCT_RANK">TM_TOV_PCT_RANK</option>
-			<option value="EFG_PCT_RANK">EFG_PCT_RANK</option>
-			<option value="TS_PCT_RANK">TS_PCT_RANK</option>
-			<option value="PACE_RANK">PACE_RANK</option>
-			<option value="PIE_RANK">PIE_RANK</option>
-		</select>
-		</ br>
-		Y-Axis Value: 
-		<select name="staty" id="staty" value="DEF_RATING" selected>
-			<option value="GP">GP</option>
-			<option value="W">W</option>
-			<option value="L">L</option>
-			<option value="W_PCT">W_PCT</option>
-			<option value="MIN">MIN</option>
-			<option value="FGM">FGM</option>
-			<option value="FGA">FGA</option>
-			<option value="FG_PCT">FG_PCT</option>
-			<option value="FG3M">FG3M</option>
-			<option value="FG3A">FG3A</option>
-			<option value="FG3_PCT">FG3_PCT</option>
-			<option value="FTM">FTM</option>
-			<option value="FTA">FTA</option>
-			<option value="FT_PCT">FT_PCT</option>
-			<option value="OREB">OREB</option>
-			<option value="DREB">DREB</option>
-			<option value="REB">REB</option>
-			<option value="AST">AST</option>
-			<option value="TOV">TOV</option>
-			<option value="STL">STL</option>
-			<option value="BLK">BLK</option>
-			<option value="BLKA">BLKA</option>
-			<option value="PF">PF</option>
-			<option value="PFD">PFD</option>
-			<option value="PTS">PTS</option>
-			<option value="PLUS_MINUS">PLUS_MINUS</option>
-			<option value="GP_RANK">GP_RANK</option>
-			<option value="W_RANK">W_RANK</option>
-			<option value="L_RANK">L_RANK</option>
-			<option value="W_PCT_RANK">W_PCT_RANK</option>
-			<option value="MIN_RANK">MIN_RANK</option>
-			<option value="FGM_RANK">FGM_RANK</option>
-			<option value="FGA_RANK">FGA_RANK</option>
-			<option value="FG_PCT_RANK">FG_PCT_RANK</option>
-			<option value="FG3M_RANK">FG3M_RANK</option>
-			<option value="FG3A_RANK">FG3A_RANK</option>
-			<option value="FG3_PCT_RANK">FG3_PCT_RANK</option>
-			<option value="FTM_RANK">FTM_RANK</option>
-			<option value="FTA_RANK">FTA_RANK</option>
-			<option value="FT_PCT_RANK">FT_PCT_RANK</option>
-			<option value="OREB_RANK">OREB_RANK</option>
-			<option value="DREB_RANK">DREB_RANK</option>
-			<option value="REB_RANK">REB_RANK</option>
-			<option value="AST_RANK">AST_RANK</option>
-			<option value="TOV_RANK">TOV_RANK</option>
-			<option value="STL_RANK">STL_RANK</option>
-			<option value="BLK_RANK">BLK_RANK</option>
-			<option value="BLKA_RANK">BLKA_RANK</option>
-			<option value="PF_RANK">PF_RANK</option>
-			<option value="PFD_RANK">PFD_RANK</option>
-			<option value="PTS_RANK">PTS_RANK</option>
-			<option value="PLUS_MINUS_RANK">PLUS_MINUS_RANK</option>
-			<option value="E_OFF_RATING">E_OFF_RATING</option>
-			<option value="OFF_RATING">OFF_RATING</option>
-			<option value="E_DEF_RATING">E_DEF_RATING</option>
-			<option value="DEF_RATING" selected>DEF_RATING</option>
-			<option value="E_NET_RATING">E_NET_RATING</option>
-			<option value="NET_RATING">NET_RATING</option>
-			<option value="AST_PCT">AST_PCT</option>
-			<option value="AST_TO">AST_TO</option>
-			<option value="AST_RATIO">AST_RATIO</option>
-			<option value="OREB_PCT">OREB_PCT</option>
-			<option value="DREB_PCT">DREB_PCT</option>
-			<option value="REB_PCT">REB_PCT</option>
-			<option value="TM_TOV_PCT">TM_TOV_PCT</option>
-			<option value="EFG_PCT">EFG_PCT</option>
-			<option value="TS_PCT">TS_PCT</option>
-			<option value="E_PACE">E_PACE</option>
-			<option value="PACE">PACE</option>
-			<option value="PACE_PER40">PACE_PER40</option>
-			<option value="POSS">POSS</option>
-			<option value="PIE">PIE</option>
-			<option value="OFF_RATING_RANK">OFF_RATING_RANK</option>
-			<option value="DEF_RATING_RANK">DEF_RATING_RANK</option>
-			<option value="NET_RATING_RANK">NET_RATING_RANK</option>
-			<option value="AST_PCT_RANK">AST_PCT_RANK</option>
-			<option value="AST_TO_RANK">AST_TO_RANK</option>
-			<option value="AST_RATIO_RANK">AST_RATIO_RANK</option>
-			<option value="OREB_PCT_RANK">OREB_PCT_RANK</option>
-			<option value="DREB_PCT_RANK">DREB_PCT_RANK</option>
-			<option value="REB_PCT_RANK">REB_PCT_RANK</option>
-			<option value="TM_TOV_PCT_RANK">TM_TOV_PCT_RANK</option>
-			<option value="EFG_PCT_RANK">EFG_PCT_RANK</option>
-			<option value="TS_PCT_RANK">TS_PCT_RANK</option>
-			<option value="PACE_RANK">PACE_RANK</option>
-			<option value="PIE_RANK">PIE_RANK</option>
-		</select>
-		Lineup Size: 
-		<input type="text" id="groupquantity" value="5">
-		Min. MP: 
-		<input type="text" id="min_mp" value="100">
-		
+		<form id="form">
+			Season: 
+			<select name="season" id="season">
+				<option value="2021-22">2021-22</option>
+				<option value="2020-21">2020-21</option>
+				<option value="2019-20">2019-20</option>
+				<option value="2018-19">2018-19</option>
+				<option value="2017-18">2017-18</option>
+				<option value="2016-17">2016-17</option>
+				<option value="2015-16">2015-16</option>
+				<option value="2014-15">2014-15</option>
+			</select>
+			<br>
+			<br>
+			X-Axis Value: 
+			<select name="statx" id="statx" >
+				<option value="GP">GP</option>
+				<option value="W">W</option>
+				<option value="L">L</option>
+				<option value="W_PCT">W_PCT</option>
+				<option value="MIN">MIN</option>
+				<option value="FGM">FGM</option>
+				<option value="FGA">FGA</option>
+				<option value="FG_PCT">FG_PCT</option>
+				<option value="FG3M">FG3M</option>
+				<option value="FG3A">FG3A</option>
+				<option value="FG3_PCT">FG3_PCT</option>
+				<option value="FTM">FTM</option>
+				<option value="FTA">FTA</option>
+				<option value="FT_PCT">FT_PCT</option>
+				<option value="OREB">OREB</option>
+				<option value="DREB">DREB</option>
+				<option value="REB">REB</option>
+				<option value="AST">AST</option>
+				<option value="TOV">TOV</option>
+				<option value="STL">STL</option>
+				<option value="BLK">BLK</option>
+				<option value="BLKA">BLKA</option>
+				<option value="PF">PF</option>
+				<option value="PFD">PFD</option>
+				<option value="PTS">PTS</option>
+				<option value="PLUS_MINUS">PLUS_MINUS</option>
+				<option value="GP_RANK">GP_RANK</option>
+				<option value="W_RANK">W_RANK</option>
+				<option value="L_RANK">L_RANK</option>
+				<option value="W_PCT_RANK">W_PCT_RANK</option>
+				<option value="MIN_RANK">MIN_RANK</option>
+				<option value="FGM_RANK">FGM_RANK</option>
+				<option value="FGA_RANK">FGA_RANK</option>
+				<option value="FG_PCT_RANK">FG_PCT_RANK</option>
+				<option value="FG3M_RANK">FG3M_RANK</option>
+				<option value="FG3A_RANK">FG3A_RANK</option>
+				<option value="FG3_PCT_RANK">FG3_PCT_RANK</option>
+				<option value="FTM_RANK">FTM_RANK</option>
+				<option value="FTA_RANK">FTA_RANK</option>
+				<option value="FT_PCT_RANK">FT_PCT_RANK</option>
+				<option value="OREB_RANK">OREB_RANK</option>
+				<option value="DREB_RANK">DREB_RANK</option>
+				<option value="REB_RANK">REB_RANK</option>
+				<option value="AST_RANK">AST_RANK</option>
+				<option value="TOV_RANK">TOV_RANK</option>
+				<option value="STL_RANK">STL_RANK</option>
+				<option value="BLK_RANK">BLK_RANK</option>
+				<option value="BLKA_RANK">BLKA_RANK</option>
+				<option value="PF_RANK">PF_RANK</option>
+				<option value="PFD_RANK">PFD_RANK</option>
+				<option value="PTS_RANK">PTS_RANK</option>
+				<option value="PLUS_MINUS_RANK">PLUS_MINUS_RANK</option>
+				<option value="E_OFF_RATING">E_OFF_RATING</option>
+				<option value="OFF_RATING" selected>OFF_RATING</option>
+				<option value="E_DEF_RATING">E_DEF_RATING</option>
+				<option value="DEF_RATING">DEF_RATING</option>
+				<option value="E_NET_RATING">E_NET_RATING</option>
+				<option value="NET_RATING">NET_RATING</option>
+				<option value="AST_PCT">AST_PCT</option>
+				<option value="AST_TO">AST_TO</option>
+				<option value="AST_RATIO">AST_RATIO</option>
+				<option value="OREB_PCT">OREB_PCT</option>
+				<option value="DREB_PCT">DREB_PCT</option>
+				<option value="REB_PCT">REB_PCT</option>
+				<option value="TM_TOV_PCT">TM_TOV_PCT</option>
+				<option value="EFG_PCT">EFG_PCT</option>
+				<option value="TS_PCT">TS_PCT</option>
+				<option value="E_PACE">E_PACE</option>
+				<option value="PACE">PACE</option>
+				<option value="PACE_PER40">PACE_PER40</option>
+				<option value="POSS">POSS</option>
+				<option value="PIE">PIE</option>
+				<option value="OFF_RATING_RANK">OFF_RATING_RANK</option>
+				<option value="DEF_RATING_RANK">DEF_RATING_RANK</option>
+				<option value="NET_RATING_RANK">NET_RATING_RANK</option>
+				<option value="AST_PCT_RANK">AST_PCT_RANK</option>
+				<option value="AST_TO_RANK">AST_TO_RANK</option>
+				<option value="AST_RATIO_RANK">AST_RATIO_RANK</option>
+				<option value="OREB_PCT_RANK">OREB_PCT_RANK</option>
+				<option value="DREB_PCT_RANK">DREB_PCT_RANK</option>
+				<option value="REB_PCT_RANK">REB_PCT_RANK</option>
+				<option value="TM_TOV_PCT_RANK">TM_TOV_PCT_RANK</option>
+				<option value="EFG_PCT_RANK">EFG_PCT_RANK</option>
+				<option value="TS_PCT_RANK">TS_PCT_RANK</option>
+				<option value="PACE_RANK">PACE_RANK</option>
+				<option value="PIE_RANK">PIE_RANK</option>
+			</select>
+			<br>
+			<br>
+			Y-Axis Value: 
+			<select name="staty" id="staty">
+				<option value="GP">GP</option>
+				<option value="W">W</option>
+				<option value="L">L</option>
+				<option value="W_PCT">W_PCT</option>
+				<option value="MIN">MIN</option>
+				<option value="FGM">FGM</option>
+				<option value="FGA">FGA</option>
+				<option value="FG_PCT">FG_PCT</option>
+				<option value="FG3M">FG3M</option>
+				<option value="FG3A">FG3A</option>
+				<option value="FG3_PCT">FG3_PCT</option>
+				<option value="FTM">FTM</option>
+				<option value="FTA">FTA</option>
+				<option value="FT_PCT">FT_PCT</option>
+				<option value="OREB">OREB</option>
+				<option value="DREB">DREB</option>
+				<option value="REB">REB</option>
+				<option value="AST">AST</option>
+				<option value="TOV">TOV</option>
+				<option value="STL">STL</option>
+				<option value="BLK">BLK</option>
+				<option value="BLKA">BLKA</option>
+				<option value="PF">PF</option>
+				<option value="PFD">PFD</option>
+				<option value="PTS">PTS</option>
+				<option value="PLUS_MINUS">PLUS_MINUS</option>
+				<option value="GP_RANK">GP_RANK</option>
+				<option value="W_RANK">W_RANK</option>
+				<option value="L_RANK">L_RANK</option>
+				<option value="W_PCT_RANK">W_PCT_RANK</option>
+				<option value="MIN_RANK">MIN_RANK</option>
+				<option value="FGM_RANK">FGM_RANK</option>
+				<option value="FGA_RANK">FGA_RANK</option>
+				<option value="FG_PCT_RANK">FG_PCT_RANK</option>
+				<option value="FG3M_RANK">FG3M_RANK</option>
+				<option value="FG3A_RANK">FG3A_RANK</option>
+				<option value="FG3_PCT_RANK">FG3_PCT_RANK</option>
+				<option value="FTM_RANK">FTM_RANK</option>
+				<option value="FTA_RANK">FTA_RANK</option>
+				<option value="FT_PCT_RANK">FT_PCT_RANK</option>
+				<option value="OREB_RANK">OREB_RANK</option>
+				<option value="DREB_RANK">DREB_RANK</option>
+				<option value="REB_RANK">REB_RANK</option>
+				<option value="AST_RANK">AST_RANK</option>
+				<option value="TOV_RANK">TOV_RANK</option>
+				<option value="STL_RANK">STL_RANK</option>
+				<option value="BLK_RANK">BLK_RANK</option>
+				<option value="BLKA_RANK">BLKA_RANK</option>
+				<option value="PF_RANK">PF_RANK</option>
+				<option value="PFD_RANK">PFD_RANK</option>
+				<option value="PTS_RANK">PTS_RANK</option>
+				<option value="PLUS_MINUS_RANK">PLUS_MINUS_RANK</option>
+				<option value="E_OFF_RATING">E_OFF_RATING</option>
+				<option value="OFF_RATING">OFF_RATING</option>
+				<option value="E_DEF_RATING">E_DEF_RATING</option>
+				<option value="DEF_RATING" selected>DEF_RATING</option>
+				<option value="E_NET_RATING">E_NET_RATING</option>
+				<option value="NET_RATING">NET_RATING</option>
+				<option value="AST_PCT">AST_PCT</option>
+				<option value="AST_TO">AST_TO</option>
+				<option value="AST_RATIO">AST_RATIO</option>
+				<option value="OREB_PCT">OREB_PCT</option>
+				<option value="DREB_PCT">DREB_PCT</option>
+				<option value="REB_PCT">REB_PCT</option>
+				<option value="TM_TOV_PCT">TM_TOV_PCT</option>
+				<option value="EFG_PCT">EFG_PCT</option>
+				<option value="TS_PCT">TS_PCT</option>
+				<option value="E_PACE">E_PACE</option>
+				<option value="PACE">PACE</option>
+				<option value="PACE_PER40">PACE_PER40</option>
+				<option value="POSS">POSS</option>
+				<option value="PIE">PIE</option>
+				<option value="OFF_RATING_RANK">OFF_RATING_RANK</option>
+				<option value="DEF_RATING_RANK">DEF_RATING_RANK</option>
+				<option value="NET_RATING_RANK">NET_RATING_RANK</option>
+				<option value="AST_PCT_RANK">AST_PCT_RANK</option>
+				<option value="AST_TO_RANK">AST_TO_RANK</option>
+				<option value="AST_RATIO_RANK">AST_RATIO_RANK</option>
+				<option value="OREB_PCT_RANK">OREB_PCT_RANK</option>
+				<option value="DREB_PCT_RANK">DREB_PCT_RANK</option>
+				<option value="REB_PCT_RANK">REB_PCT_RANK</option>
+				<option value="TM_TOV_PCT_RANK">TM_TOV_PCT_RANK</option>
+				<option value="EFG_PCT_RANK">EFG_PCT_RANK</option>
+				<option value="TS_PCT_RANK">TS_PCT_RANK</option>
+				<option value="PACE_RANK">PACE_RANK</option>
+				<option value="PIE_RANK">PIE_RANK</option>
+			</select>
+			<br>
+			<br>
+			Z-Axis Value:
+			<select name="statz" id="statz">
+				<option value="---" selected>---</option>
+				<option value="GP">GP</option>
+				<option value="W">W</option>
+				<option value="L">L</option>
+				<option value="W_PCT">W_PCT</option>
+				<option value="MIN">MIN</option>
+				<option value="FGM">FGM</option>
+				<option value="FGA">FGA</option>
+				<option value="FG_PCT">FG_PCT</option>
+				<option value="FG3M">FG3M</option>
+				<option value="FG3A">FG3A</option>
+				<option value="FG3_PCT">FG3_PCT</option>
+				<option value="FTM">FTM</option>
+				<option value="FTA">FTA</option>
+				<option value="FT_PCT">FT_PCT</option>
+				<option value="OREB">OREB</option>
+				<option value="DREB">DREB</option>
+				<option value="REB">REB</option>
+				<option value="AST">AST</option>
+				<option value="TOV">TOV</option>
+				<option value="STL">STL</option>
+				<option value="BLK">BLK</option>
+				<option value="BLKA">BLKA</option>
+				<option value="PF">PF</option>
+				<option value="PFD">PFD</option>
+				<option value="PTS">PTS</option>
+				<option value="PLUS_MINUS">PLUS_MINUS</option>
+				<option value="GP_RANK">GP_RANK</option>
+				<option value="W_RANK">W_RANK</option>
+				<option value="L_RANK">L_RANK</option>
+				<option value="W_PCT_RANK">W_PCT_RANK</option>
+				<option value="MIN_RANK">MIN_RANK</option>
+				<option value="FGM_RANK">FGM_RANK</option>
+				<option value="FGA_RANK">FGA_RANK</option>
+				<option value="FG_PCT_RANK">FG_PCT_RANK</option>
+				<option value="FG3M_RANK">FG3M_RANK</option>
+				<option value="FG3A_RANK">FG3A_RANK</option>
+				<option value="FG3_PCT_RANK">FG3_PCT_RANK</option>
+				<option value="FTM_RANK">FTM_RANK</option>
+				<option value="FTA_RANK">FTA_RANK</option>
+				<option value="FT_PCT_RANK">FT_PCT_RANK</option>
+				<option value="OREB_RANK">OREB_RANK</option>
+				<option value="DREB_RANK">DREB_RANK</option>
+				<option value="REB_RANK">REB_RANK</option>
+				<option value="AST_RANK">AST_RANK</option>
+				<option value="TOV_RANK">TOV_RANK</option>
+				<option value="STL_RANK">STL_RANK</option>
+				<option value="BLK_RANK">BLK_RANK</option>
+				<option value="BLKA_RANK">BLKA_RANK</option>
+				<option value="PF_RANK">PF_RANK</option>
+				<option value="PFD_RANK">PFD_RANK</option>
+				<option value="PTS_RANK">PTS_RANK</option>
+				<option value="PLUS_MINUS_RANK">PLUS_MINUS_RANK</option>
+				<option value="E_OFF_RATING">E_OFF_RATING</option>
+				<option value="OFF_RATING">OFF_RATING</option>
+				<option value="E_DEF_RATING">E_DEF_RATING</option>
+				<option value="DEF_RATING">DEF_RATING</option>
+				<option value="E_NET_RATING">E_NET_RATING</option>
+				<option value="NET_RATING">NET_RATING</option>
+				<option value="AST_PCT">AST_PCT</option>
+				<option value="AST_TO">AST_TO</option>
+				<option value="AST_RATIO">AST_RATIO</option>
+				<option value="OREB_PCT">OREB_PCT</option>
+				<option value="DREB_PCT">DREB_PCT</option>
+				<option value="REB_PCT">REB_PCT</option>
+				<option value="TM_TOV_PCT">TM_TOV_PCT</option>
+				<option value="EFG_PCT">EFG_PCT</option>
+				<option value="TS_PCT">TS_PCT</option>
+				<option value="E_PACE">E_PACE</option>
+				<option value="PACE">PACE</option>
+				<option value="PACE_PER40">PACE_PER40</option>
+				<option value="POSS">POSS</option>
+				<option value="PIE">PIE</option>
+				<option value="OFF_RATING_RANK">OFF_RATING_RANK</option>
+				<option value="DEF_RATING_RANK">DEF_RATING_RANK</option>
+				<option value="NET_RATING_RANK">NET_RATING_RANK</option>
+				<option value="AST_PCT_RANK">AST_PCT_RANK</option>
+				<option value="AST_TO_RANK">AST_TO_RANK</option>
+				<option value="AST_RATIO_RANK">AST_RATIO_RANK</option>
+				<option value="OREB_PCT_RANK">OREB_PCT_RANK</option>
+				<option value="DREB_PCT_RANK">DREB_PCT_RANK</option>
+				<option value="REB_PCT_RANK">REB_PCT_RANK</option>
+				<option value="TM_TOV_PCT_RANK">TM_TOV_PCT_RANK</option>
+				<option value="EFG_PCT_RANK">EFG_PCT_RANK</option>
+				<option value="TS_PCT_RANK">TS_PCT_RANK</option>
+				<option value="PACE_RANK">PACE_RANK</option>
+				<option value="PIE_RANK">PIE_RANK</option>
+			</select>
+			<br>
+			<br>
+			Lineup Size: 
+			<input type="text" id="groupquantity" value="5">
+			<br>
+			<br>
+			Min. MP: 
+			<input type="text" id="min_mp" value="100">
+			
+			<br>
+			<br>
+			<button type="submit" name="button" >Submit</button>
+			
+		</form>
+    </div>
+	
+	
+    <div class="main">
 
-        <button type="submit" name="button" >Submit</button>
-		
-    </form>
-    
-    <div id="output"></div>
-	<div id="plot"></div>
-
+		<div id="output"></div>
+		<div id="plot"></div>
+	</div>
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!-- 	<script src="static/nbaSubmit.js"></script>	 -->

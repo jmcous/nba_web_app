@@ -22,12 +22,15 @@ def index():
 @app.route('/nbaSubmit', methods=['GET','POST'])
 def nbaSubmit():
     if request.method == "POST":
-
+        
         group_quantity = int(request.form['groupquantity'])
         season = str(request.form['season'])
         min_mp = float(request.form['min_mp'])
         statx = str(request.form['statx'])
         staty = str(request.form['staty'])
+        statz = str(request.form['statz'])
+        
+        
         
         # get base and advance data from nba_api 
 
@@ -63,10 +66,24 @@ def nbaSubmit():
             y = result_min[staty].tolist()
         else:
             print('problem with variable y')
+            
+            
+        # if a statz variable is selected, use it    
+        if statz != '---':            
+            if statz in result_min.columns:
+                z = result_min[staty].tolist()
+            elif (statz+'_x') in result_min.columns:
+                statz = statz + "_x"
+                z = result_min[statz].tolist()
+            else:
+                print('problem with variable z')
+        else:
+            z = 'null'
+
         
         lineups = result_min['GROUP_NAME_x'].tolist()
 
-        return jsonify({'x' : x, 'y' : y, 'lineups' : lineups})
+        return jsonify({'x' : x, 'y' : y, 'z' : z, 'lineups' : lineups})
 
 
 

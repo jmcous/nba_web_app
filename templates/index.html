@@ -10,7 +10,7 @@
 
 	
 	.main {
-	  margin-left: 211px; /* Same as the width of the sidenav */
+	  margin-left: 211px; 
 	  padding: 0px 10px;
 	  background-color: black;
 	  color: #43FF33;
@@ -63,6 +63,9 @@
 	  font-family: "Courier New";
 	  
 	}
+	
+	
+	
 	
 </style>
 <body>
@@ -393,6 +396,7 @@
                 season : $('#season').val(),
                 statx : $('#statx').val(),
 				staty : $('#staty').val(),
+				statz : $('#statz').val(),
 				groupquantity : $('#groupquantity').val(),
 				min_mp : $('#min_mp').val()
             },
@@ -400,34 +404,77 @@
             url : '/nbaSubmit'
             })
             .done(function(data){
-				console.log(data);
-				var trace1 = {
-				  x: data.x,
-				  y: data.y,
-				  mode: 'markers',
-				  type: 'scatter',
-				  text: data.lineups
-				};
-
-				
-				var data = [trace1];
-
-				
-				var layout = {
-				xaxis: {
-					title:{
-						text: $('#statx').val()
-					}
-				},
-				yaxis: {
-					title: {
-						text: $('#staty').val()
-					}
-				}
-				}
-				
-				Plotly.newPlot('output', data, layout);
 			
+				//check if there is a statz that can be used
+				// if no, then plot 2d scat chart
+				if (data.z.constructor == String) {
+					console.log(data);
+					var trace1 = {
+					  x: data.x,
+					  y: data.y,
+					  mode: 'markers',
+					  type: 'scatter',
+					  text: data.lineups
+					};
+
+					
+					var data = [trace1];
+
+					
+					var layout = {
+						xaxis: {
+							title:{
+								text: $('#statx').val()
+							}
+						},
+						yaxis: {
+							title: {
+								text: $('#staty').val()
+							}
+						}
+					};
+					
+					Plotly.newPlot('output', data, layout);
+					
+				} else { //plot 3d scatter plot
+				
+					var trace1 = {
+					  x: data.x,
+					  y: data.y,
+					  z: data.z,
+					  mode: 'markers',
+					  type: 'scatter3d',
+					  text: data.lineups
+					};
+
+					
+					var data = [trace1];
+
+					
+					var layout = {
+						xaxis: {
+							title:{
+								text: $('#statx').val()
+							}
+						},
+						yaxis: {
+							title: {
+								text: $('#staty').val()
+							}
+						},
+						zaxis: {
+							title: {
+								text: $('#statz').val()
+							}
+						}
+					}
+					
+					Plotly.newPlot('output', data, layout);
+				
+				
+				
+				
+				}
 			
 			
             });

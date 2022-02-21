@@ -93,14 +93,11 @@ def nbaSubmit():
             x_ = np.array(x).reshape(-1,1)
             y_ = np.array(y)
             
-            print(x_)
-            print(y_)
             # fit to Linear Regression model
             model = LinearRegression().fit(x_,y_)
 
             # predicted y data
             y_pred = model.predict(x_)
-            print(y_pred.tolist())
             
             return jsonify({'x' : x, 'y' : y, 'y_pred': y_pred.tolist(), 'z' : z, 'lineups' : lineups})
 

@@ -11,6 +11,8 @@ from nba_api.stats.endpoints import boxscoreadvancedv2 as bxscadv
 from nba_api.stats.endpoints import leaguedashteamstats
 from nba_api.stats.endpoints import leaguedashlineups
 from nba_api.stats.library.parameters import *
+import numpy as np
+from sklearn.linear_model import LinearRegression
 
             
 app = Flask(__name__)
@@ -29,7 +31,10 @@ def nbaSubmit():
         statx = str(request.form['statx'])
         staty = str(request.form['staty'])
         statz = str(request.form['statz'])
-        
+        try:
+            linreg = int(request.form['linreg'])
+        except KeyError:
+            linreg = 0
         
         
         # get base and advance data from nba_api 
@@ -80,10 +85,28 @@ def nbaSubmit():
         else:
             z = 'null'
 
-        
         lineups = result_min['GROUP_NAME_x'].tolist()
 
+        # if linreg, return the json with predicted data
+        if linreg:
+            # Convert to numpy arrays/reshape
+            x_ = np.array(x).reshape(-1,1)
+            y_ = np.array(y)
+            
+            print(x_)
+            print(y_)
+            # fit to Linear Regression model
+            model = LinearRegression().fit(x_,y_)
+
+            # predicted y data
+            y_pred = model.predict(x_)
+            print(y_pred.tolist())
+            
+            return jsonify({'x' : x, 'y' : y, 'y_pred': y_pred.tolist(), 'z' : z, 'lineups' : lineups})
+
+        
         return jsonify({'x' : x, 'y' : y, 'z' : z, 'lineups' : lineups})
+
 
 
 

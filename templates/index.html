@@ -8,6 +8,9 @@
 <style>
 
 
+	.html {
+		height: 100%;
+	}
 	
 	.main {
 	  margin-left: 211px; 
@@ -17,8 +20,17 @@
 	  font-family: "Courier New";
 	}
 	
+	.main plot{
+		background-color: black
+	}
+	
+	.main output{
+		background-color: black;
+		height: 800px
+	}
+	
 	.body {
-	  background-color: black;
+	  background-color: black !important;
 	}
 	
 	.sidenav {
@@ -64,6 +76,12 @@
 	  
 	}
 	
+	.sidenav checkbox {
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+	  
+	}
 	
 	
 	
@@ -370,6 +388,10 @@
 			
 			<br>
 			<br>
+			<input type="checkbox" id="linreg" name="linreg" value="1">
+			<label for="linreg">Linear Regression</label>
+			<br>
+			<br>
 			<button type="submit" name="button" >Submit</button>
 			
 		</form>
@@ -381,108 +403,133 @@
 		<div id="output"></div>
 		<div id="plot"></div>
 	</div>
+</body>
+
 	
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!-- 	<script src="static/nbaSubmit.js"></script>	 -->
 
-	<script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
-	<script type="text/javascript">
-	
-    $(document).ready(function() {
-        $('#form').on('submit',function(e){
-            $.ajax({
-            data : {
-                season : $('#season').val(),
-                statx : $('#statx').val(),
-				staty : $('#staty').val(),
-				statz : $('#statz').val(),
-				groupquantity : $('#groupquantity').val(),
-				min_mp : $('#min_mp').val()
-            },
-            type : 'POST',
-            url : '/nbaSubmit'
-            })
-            .done(function(data){
-			
-				//check if there is a statz that can be used
-				// if no, then plot 2d scat chart
-				if (data.z.constructor == String) {
-					console.log(data);
+<script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$('#form').on('submit',function(e){
+		$.ajax({
+		data : {
+			season : $('#season').val(),
+			statx : $('#statx').val(),
+			staty : $('#staty').val(),
+			statz : $('#statz').val(),
+			groupquantity : $('#groupquantity').val(),
+			min_mp : $('#min_mp').val(),
+			linreg: $('#linreg:checked').val()
+
+		},
+		type : 'POST',
+		url : '/nbaSubmit'
+		})
+		.done(function(data){
+			//check if there is a statz that can be used
+			// if no, then plot 2d scat chart
+			if (data.z.constructor == String) {
+				// if linear regression button is checked, plot line
+				if ($('#linreg:checked').val() == 1){
 					var trace1 = {
-					  x: data.x,
-					  y: data.y,
-					  mode: 'markers',
-					  type: 'scatter',
-					  text: data.lineups
+						x: data.x,
+						y: data.y,
+						mode: 'markers',
+						type: 'scatter',
+						text: data.lineups,
+						marker:{color: '#43FF33'},
+						name: 'Data'
+					};
+
+					var trace2 = {
+						x: data.x,
+						y: data.y_pred,
+						mode: 'lines',
+						marker:{color: '#43FF33'},
+						name: 'Linear Regression'
+					};
+					var data = [trace1,trace2];
+				} else { // if it is not selected then just plot the scatters
+					var trace1 = {
+					x: data.x,
+					y: data.y,
+					mode: 'markers',
+					type: 'scatter',
+					text: data.lineups,
+					marker:{color: '#43FF33'}
 					};
 
 					
 					var data = [trace1];
-
-					
-					var layout = {
-						xaxis: {
-							title:{
-								text: $('#statx').val()
-							}
-						},
-						yaxis: {
-							title: {
-								text: $('#staty').val()
-							}
-						}
-					};
-					
-					Plotly.newPlot('output', data, layout);
-					
-				} else { //plot 3d scatter plot
+				}
 				
-					var trace1 = {
-					  x: data.x,
-					  y: data.y,
-					  z: data.z,
-					  mode: 'markers',
-					  type: 'scatter3d',
-					  text: data.lineups
-					};
-
+				var layout = {
+					xaxis: {
+						title:{
+							text: $('#statx').val()
+						}
+					},
+					yaxis: {
+						title: {
+							text: $('#staty').val()
+						}
+					},
+					plot_bgcolor: 'black',
+					paper_bgcolor: 'black'
 					
-					var data = [trace1];
+				};
+				
+				Plotly.newPlot('plot', data, layout);
+				
+			} else { //plot 3d scatter plot
+			
+				var trace1 = {
+				  x: data.x,
+				  y: data.y,
+				  z: data.z,
+				  mode: 'markers',
+				  type: 'scatter3d',
+				  text: data.lineups,
+				  marker:{color: '#43FF33',size:5}
+				};
 
-					
-					var layout = {
+				
+				var data = [trace1];
+
+				
+				var layout = {
+					scene: {
 						xaxis: {
-							title:{
-								text: $('#statx').val()
-							}
+							title: $('#statx').val()
 						},
 						yaxis: {
-							title: {
-								text: $('#staty').val()
-							}
+							title: $('#staty').val()
 						},
 						zaxis: {
-							title: {
-								text: $('#statz').val()
-							}
+							title: $('#statz').val()
 						}
-					}
-					
-					Plotly.newPlot('output', data, layout);
-				
-				
-				
-				
+					},
+					plot_bgcolor: 'black',
+					paper_bgcolor: 'black'
 				}
+				
+				Plotly.newPlot('plot', data, layout);
 			
 			
-            });
-            e.preventDefault();
-        });
-    });
-	
-    </script>
-    
-</body>
+			
+			
+			}
+		
+		
+		});
+		e.preventDefault();
+	});
+});
+
+</script>
+
 </html>

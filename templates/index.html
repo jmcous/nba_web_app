@@ -13,15 +13,26 @@
 	}
 	
 	.main {
-	  margin-left: 211px; 
+	  margin-left: 311px; 
 	  padding: 0px 10px;
 	  background-color: black;
 	  color: #43FF33;
 	  font-family: "Courier New";
+	  align: center;
 	}
 	
 	.main plot{
-		background-color: black
+		background-color: black;
+		height: 800px;
+		align: center;
+		border: 2px solid #43FF33;
+	}
+	
+	.plot{
+		background-color: black;
+		height: 800px;
+		align: center;
+		border: 2px solid #43FF33;
 	}
 	
 	.main output{
@@ -29,13 +40,14 @@
 		height: 800px
 	}
 	
-	.body {
+	body {
 	  background-color: black !important;
 	}
+
 	
 	.sidenav {
 	  height: 100%;
-	  width: 200px;
+	  width: 300px;
 	  position: fixed;
 	  z-index: 1;
 	  top: 0;
@@ -73,17 +85,31 @@
 	  background-color: black;
 	  color: #43FF33;
 	  font-family: "Courier New";
-	  
+	  border: 1px solid #43FF33;
 	}
 	
 	.sidenav checkbox {
 	  background-color: black;
 	  color: #43FF33;
 	  font-family: "Courier New";
-	  
+	  width: 10px;
 	}
 	
 	
+	.sidenav input.textInput{
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+	  width: 50px;
+	}
+	
+	
+	.sidenav input.linregCheckbox{
+	  background-color: black;
+	  color: #43FF33;
+	  font-family: "Courier New";
+	  width: 10px;
+	}
 	
 </style>
 <body>
@@ -378,18 +404,19 @@
 				<option value="PIE_RANK">PIE_RANK</option>
 			</select>
 			<br>
-			<br>
-			Lineup Size: 
-			<input type="text" id="groupquantity" value="5">
-			<br>
+			<!-- <br> -->
+			<!-- Lineup Size:  -->
+			<!-- <input type="text" id="groupquantity" value="5"> -->
+			<!-- <br> -->
 			<br>
 			Min. MP: 
-			<input type="text" id="min_mp" value="100">
+			<input type="text" id="min_mp" class="textInput" value="100">
 			
 			<br>
 			<br>
-			<input type="checkbox" id="linreg" name="linreg" value="1">
-			<label for="linreg">Linear Regression</label>
+			<input type="checkbox" class="linregCheckbox" id="linreg" name="linreg" value="1">
+			Linear Regression
+			<!-- <label for="linreg">Linear Regression</label> -->
 			<br>
 			<br>
 			<button type="submit" name="button" >Submit</button>
@@ -400,8 +427,8 @@
 	
     <div class="main">
 
-		<div id="output"></div>
-		<div id="plot"></div>
+		<div class="output" id="output"></div>
+		<div class="plot" id="plot"></div>
 	</div>
 </body>
 
@@ -409,7 +436,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!-- 	<script src="static/nbaSubmit.js"></script>	 -->
-
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
 <script type="text/javascript">
 
@@ -468,6 +496,7 @@ $(document).ready(function() {
 				}
 				
 				var layout = {
+					height: 600,
 					xaxis: {
 						title:{
 							text: $('#statx').val()
@@ -483,7 +512,11 @@ $(document).ready(function() {
 					
 				};
 				
-				Plotly.newPlot('plot', data, layout);
+				var config = {responsive: true};
+
+				
+				
+				Plotly.newPlot('plot', data, layout,config);
 				
 			} else { //plot 3d scatter plot
 			
@@ -502,6 +535,7 @@ $(document).ready(function() {
 
 				
 				var layout = {
+					height: 800,
 					scene: {
 						xaxis: {
 							title: $('#statx').val()
@@ -514,10 +548,12 @@ $(document).ready(function() {
 						}
 					},
 					plot_bgcolor: 'black',
-					paper_bgcolor: 'black'
-				}
+					paper_bgcolor: 'black',
+				};
 				
-				Plotly.newPlot('plot', data, layout);
+				var config = {responsive: true};
+				
+				Plotly.newPlot('plot', data, layout,config);
 			
 			
 			

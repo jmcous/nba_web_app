@@ -13,7 +13,7 @@ from nba_api.stats.endpoints import leaguedashlineups
 from nba_api.stats.library.parameters import *
 import numpy as np
 from sklearn.linear_model import LinearRegression
-
+import statsmodels.formula.api as smf
             
 app = Flask(__name__)
 
@@ -25,7 +25,8 @@ def index():
 def nbaSubmit():
     if request.method == "POST":
         
-        group_quantity = int(request.form['groupquantity'])
+        # group_quantity = int(request.form['groupquantity'])
+        group_quantity = 5;
         season = str(request.form['season'])
         min_mp = float(request.form['min_mp'])
         statx = str(request.form['statx'])
@@ -88,7 +89,20 @@ def nbaSubmit():
         lineups = result_min['GROUP_NAME_x'].tolist()
 
         # if linreg, return the json with predicted data
-        if linreg:
+        if (linreg==1) and (statz != '---'):
+        
+            # Convert to numpy arrays/reshape
+            x_ = np.array(x).reshape(-1,1)
+            y_ = np.array(y)
+            
+            # fit to Linear Regression model
+            model = LinearRegression().fit(x_,y_)
+        
+            # prepare data for visualization
+            x_surf, y_surf = np.meshgrid(np.linspace(min(x),max(x),100),np.linspace(min(y),max(y),100))
+            
+        
+        elif linreg:
             # Convert to numpy arrays/reshape
             x_ = np.array(x).reshape(-1,1)
             y_ = np.array(y)
@@ -98,8 +112,15 @@ def nbaSubmit():
 
             # predicted y data
             y_pred = model.predict(x_)
-            
-            return jsonify({'x' : x, 'y' : y, 'y_pred': y_pred.tolist(), 'z' : z, 'lineups' : lineups})
+
+            # get results
+            r_sq = model.score(x_,y_)
+            intercept, coefficients = model.intercept_, model.coef_.tolist()
+            results = [r_sq, intercept, coefficients]
+            print(results)
+
+            return jsonify({'x' : x, 'y' : y, 'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups})
+
 
         
         return jsonify({'x' : x, 'y' : y, 'z' : z, 'lineups' : lineups})

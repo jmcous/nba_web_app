@@ -470,7 +470,7 @@ $(document).ready(function() {
 						type: 'scatter',
 						text: data.lineups,
 						marker:{color: '#43FF33'},
-						name: 'Data'
+						name: 'Lineups'
 					};
 
 					var trace2 = {
@@ -480,7 +480,8 @@ $(document).ready(function() {
 						marker:{color: '#43FF33'},
 						name: 'Linear Regression'
 					};
-					var data = [trace1,trace2];
+					
+					var plotdata = [trace1,trace2];
 				} else { // if it is not selected then just plot the scatters
 					var trace1 = {
 					x: data.x,
@@ -488,11 +489,12 @@ $(document).ready(function() {
 					mode: 'markers',
 					type: 'scatter',
 					text: data.lineups,
-					marker:{color: '#43FF33'}
+					marker:{color: '#43FF33'},
+					name: 'Lineups'
 					};
 
 					
-					var data = [trace1];
+					var plotdata = [trace1];
 				}
 				
 				var layout = {
@@ -516,23 +518,54 @@ $(document).ready(function() {
 
 				
 				
-				Plotly.newPlot('plot', data, layout,config);
+				Plotly.newPlot('plot', plotdata, layout,config);
 				
-			} else { //plot 3d scatter plot
+			} else {//plot 3d scatter plot
+
 			
-				var trace1 = {
-				  x: data.x,
-				  y: data.y,
-				  z: data.z,
-				  mode: 'markers',
-				  type: 'scatter3d',
-				  text: data.lineups,
-				  marker:{color: '#43FF33',size:5}
-				};
-
+				// if linear regression button is checked, get different traces
+				if ($('#linreg:checked').val() == 1){
 				
-				var data = [trace1];
+					var trace1 = {
+					  x: data.x,
+					  y: data.y,
+					  z: data.z,
+					  mode: 'markers',
+					  type: 'scatter3d',
+					  text: data.lineups,
+					  marker:{color: '#43FF33',size:5},
+					  name: 'Lineups'
 
+					};
+
+					var trace2 = {
+						x: data.x_pred,
+						y: data.y_pred,
+						z: data.z_pred,
+						type: 'mesh3d',
+						colorscale: 'rgb(255, 0, 255)',
+						opacity: 0.5,
+						name: 'Linear Regression'
+					};
+					
+					
+					var plotdata = [trace1,trace2];
+				} else {
+				
+					var trace1 = {
+					  x: data.x,
+					  y: data.y,
+					  z: data.z,
+					  mode: 'markers',
+					  type: 'scatter3d',
+					  text: data.lineups,
+					  marker:{color: '#43FF33',size:5},
+					  name: 'Lineups'
+					};
+
+					
+					var plotdata = [trace1];	
+				}
 				
 				var layout = {
 					height: 800,
@@ -553,10 +586,8 @@ $(document).ready(function() {
 				
 				var config = {responsive: true};
 				
-				Plotly.newPlot('plot', data, layout,config);
-			
-			
-			
+				Plotly.newPlot('plot', plotdata, layout,config);				
+				
 			
 			}
 		

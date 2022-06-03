@@ -4,3 +4,4 @@ nba_api
 datetime
 numpy
 scikit-learn
+gunicorn

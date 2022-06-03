@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    return render_template('app_index.html')
+    return render_template('index.html')
 
 @app.route('/nbaSubmit', methods=['GET','POST'])
 def nbaSubmit():
@@ -40,7 +40,7 @@ def nbaSubmit():
         filename = 'data/' + season+'_'+str(group_quantity)+'.csv'
         result = pd.read_csv(filename)
         
-        # # get base and advance data from nba_api 
+        # get base and advance data from nba_api 
 
         # base_lineups = leaguedashlineups.LeagueDashLineups(group_quantity=group_quantity,season=season,measure_type_detailed_defense=MeasureTypeDetailedDefense().base)
 
@@ -51,9 +51,8 @@ def nbaSubmit():
         # dfa = advanced_lineups.get_data_frames()[0]
         
         
-        # # append dataframes
-        # result = pd.merge(dfb,dfa,on="GROUP_ID")
-         
+        # append dataframes
+        #result = pd.merge(dfb,dfa,on="GROUP_ID")
         
         # filter based on minimum minutes
         result_min = result[result['MIN_x'] >= min_mp]

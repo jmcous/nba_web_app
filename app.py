@@ -127,7 +127,7 @@ def nbaSubmit():
             results = [r_sq, intercept, coefficients]
 
             #print(r_sq)
-        
+            print(results)
             return jsonify({'x' : x, 'y' : y, 'z': z, 'x_pred': xx_pred.flatten().tolist(), 'y_pred': yy_pred.flatten().tolist(), 'z_pred': predicted.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups})
 
         
@@ -145,9 +145,9 @@ def nbaSubmit():
             # get results
             r_sq = model.score(x_,y_)
             intercept, coefficients = model.intercept_, model.coef_.tolist()
-            results = [r_sq, intercept, coefficients]
-            #print(results)
-
+            results = [r_sq, intercept, coefficients[0]]
+            print(results)
+            
             return jsonify({'x' : x, 'y' : y, 'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups})
 
 

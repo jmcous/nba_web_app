@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+
+<!-- CREATED BY JUSTIN COUSINEAU, 2022.
+APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
+ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +17,7 @@
 	}
 	
 	.main {
-	  margin-left: 311px; 
+	  margin-left: 19%; 
 	  padding: 0px 10px;
 	  background-color: black;
 	  color: #43FF33;
@@ -46,8 +50,9 @@
 
 	
 	.sidenav {
-	  height: 100%;
-	  width: 300px;
+	  height: 80%;
+	  width: 18%;
+	  padding: 0px 10px;
 	  position: fixed;
 	  z-index: 1;
 	  top: 0;
@@ -61,11 +66,22 @@
 	  font-family: "Courier New";
 	}
 	
+	.sidenav a{
+		color: #43FF33;
+
+	
+	}
 	.sidenav h1 {
 	  color: #43FF33;
 	  font-family: "Courier New";
 	}
-	
+	.sidenav description{
+		font-size: 50px;
+	}
+	.sidenav h2 {
+	  color: #43FF33;
+	  font-family: "Courier New";
+	}
 	.sidenav select {
 	  background-color: black;
 	  color: #43FF33;
@@ -103,7 +119,7 @@
 	  width: 50px;
 	}
 	
-	
+
 	.sidenav input.linregCheckbox{
 	  background-color: black;
 	  color: #43FF33;
@@ -111,12 +127,27 @@
 	  width: 10px;
 	}
 	
+	.sidenav #lr_container{
+		position: absolute;
+		bottom:10%;
+		left:2%;
+	}
+	.sidenav #lr_description{
+		position: absolute;
+		bottom: 15%;
+		left: 2%;
+	}
 </style>
 <body>
 
 	<div class="sidenav">
 		<h1>5-Man Lineup Analyzer</h1>
-
+		<h5>
+		Uses regular season NBA lineup data from selected year.</br>
+		Sources: stats.nba.com, Swar Patel's <a href="https://github.com/swar/nba_api">nba_api package</a>, sklearn, plotly.</br>
+		</br>
+		Created by Justin Cousineau, 2022.
+		</h5>
 		<form id="form">
 			Season: 
 			<select name="season" id="season">
@@ -420,8 +451,17 @@
 			<br>
 			<br>
 			<button type="submit" name="button" >Submit</button>
-			
+
 		</form>
+		</br>
+		</br>
+		</br>
+		<div class="lr_container">
+			<div id="rsq_container" contenteditable="true"></div>
+<!-- 			<div id="int_container" contenteditable="true"></div>
+			<div id="coef1_container" contenteditable="true"></div>
+			<div id="coef2_container" contenteditable="true"></div> -->
+		</div>
     </div>
 	
 	
@@ -436,8 +476,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!-- 	<script src="static/nbaSubmit.js"></script>	 -->
-<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
 <script type="text/javascript">
 
@@ -482,6 +520,21 @@ $(document).ready(function() {
 					};
 					
 					var plotdata = [trace1,trace2];
+					
+					const squared = "2"
+					var rsq_string = "R"+squared.sup()+": "+data.pred_results[0];
+					var int_string = "Intercept: "+data.pred_results[1];
+					var coef_string = "Coefficient: "+data.pred_results[2];
+					
+					const rsq_container = document.getElementById('rsq_container');
+					const int_container = document.getElementById('int_container');
+					const coef1_container = document.getElementById('coef1_container');
+
+					rsq_container.innerHTML = rsq_string;
+					//int_container.innerHTML = int_string;
+					//coef1_container.innerHTML = coef_string;
+
+					
 				} else { // if it is not selected then just plot the scatters
 					var trace1 = {
 					x: data.x,
@@ -493,8 +546,11 @@ $(document).ready(function() {
 					name: 'Lineups'
 					};
 
-					
 					var plotdata = [trace1];
+					
+					var lr_string = "";
+					const rsq_container = document.getElementById('rsq_container');
+					rsq_container.innerHTML = lr_string;
 				}
 				
 				var layout = {
@@ -509,6 +565,7 @@ $(document).ready(function() {
 							text: $('#staty').val()
 						}
 					},
+					automargin: true,
 					plot_bgcolor: 'black',
 					paper_bgcolor: 'black'
 					
@@ -550,6 +607,26 @@ $(document).ready(function() {
 					
 					
 					var plotdata = [trace1,trace2];
+					
+					const squared = "2"
+					var rsq_string = "R"+squared.sup()+": "+data.pred_results[0];
+					var int_string = "Intercept: "+data.pred_results[1];
+					var coef1_string = "Coefficients: "+data.pred_results[2][0]+",";
+					var coef2_string = data.pred_results[2][1];
+					
+					const rsq_container = document.getElementById('rsq_container');
+					const int_container = document.getElementById('int_container');
+					const coef1_container = document.getElementById('coef1_container');
+					const coef2_container = document.getElementById('coef2_container');
+
+
+					rsq_container.innerHTML = rsq_string;
+					//int_container.innerHTML = int_string;
+					//coef1_container.innerHTML = coef1_string;
+					//coef2_container.innerHTML = coef2_string;
+
+					
+					
 				} else {
 				
 					var trace1 = {
@@ -565,6 +642,10 @@ $(document).ready(function() {
 
 					
 					var plotdata = [trace1];	
+					
+					var lr_string = "";
+					const rsq_container = document.getElementById('rsq_container');
+					rsq_container.innerHTML = lr_string;
 				}
 				
 				var layout = {
@@ -579,6 +660,13 @@ $(document).ready(function() {
 						zaxis: {
 							title: $('#statz').val()
 						}
+					},
+					  margin: {
+						l: 10,
+						r: 10,
+						b: 10,
+						t: 10,
+						pad: 4
 					},
 					plot_bgcolor: 'black',
 					paper_bgcolor: 'black',

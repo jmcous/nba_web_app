@@ -40,7 +40,7 @@ def nbaSubmit():
         filename = 'data/' + season+'_'+str(group_quantity)+'.csv'
         result = pd.read_csv(filename)
         
-        # get base and advance data from nba_api 
+        # # get base and advance data from nba_api 
 
         # base_lineups = leaguedashlineups.LeagueDashLineups(group_quantity=group_quantity,season=season,measure_type_detailed_defense=MeasureTypeDetailedDefense().base)
 
@@ -51,8 +51,9 @@ def nbaSubmit():
         # dfa = advanced_lineups.get_data_frames()[0]
         
         
-        # append dataframes
-        #result = pd.merge(dfb,dfa,on="GROUP_ID")
+        # # append dataframes
+        # result = pd.merge(dfb,dfa,on="GROUP_ID")
+         
         
         # filter based on minimum minutes
         result_min = result[result['MIN_x'] >= min_mp]
@@ -126,7 +127,7 @@ def nbaSubmit():
             results = [r_sq, intercept, coefficients]
 
             #print(r_sq)
-        
+            #print(results)
             return jsonify({'x' : x, 'y' : y, 'z': z, 'x_pred': xx_pred.flatten().tolist(), 'y_pred': yy_pred.flatten().tolist(), 'z_pred': predicted.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups})
 
         
@@ -144,9 +145,9 @@ def nbaSubmit():
             # get results
             r_sq = model.score(x_,y_)
             intercept, coefficients = model.intercept_, model.coef_.tolist()
-            results = [r_sq, intercept, coefficients]
+            results = [r_sq, intercept, coefficients[0]]
             #print(results)
-
+            
             return jsonify({'x' : x, 'y' : y, 'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups})
 
 

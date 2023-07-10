@@ -316,12 +316,15 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 				<option value="PIE">PIE</option>
 			</select>
 			<br>
+			<br>
+			NOTE: Try rotating the graph when the graph features Z-axis values!
+			<br>
 			<!-- <br> -->
 			<!-- Lineup Size:  -->
 			<!-- <input type="text" id="groupquantity" value="5"> -->
 			<!-- <br> -->
 			<br>
-			Min. MP: 
+			Min. Minutes Played: 
 			<input type="text" id="min_mp" class="textInput" value="100">
 			
 			<br>
@@ -433,22 +436,54 @@ $(document).ready(function() {
 					const rsq_container = document.getElementById('rsq_container');
 					rsq_container.innerHTML = lr_string;
 				}
-				
+				var gridcolor = 'rgba(255, 255, 255,0.3)'
 				var layout = {
 					height: 600,
 					xaxis: {
 						title:{
-							text: $('#statx').val()
-						}
+							text: $('#statx').val(),
+							color: 'white',
+							font: {
+								family: 'Courier New',
+								size: 18,
+							}
+						},
+						tickfont: {
+							color: 'white',
+							family: 'Courier New',
+							size: 15
+						},
+						showline: true,
+						linecolor: 'white',
+						gridcolor: gridcolor,
+						linewidth: 1,
+						color: 'white'
 					},
 					yaxis: {
 						title: {
-							text: $('#staty').val()
-						}
+							text: $('#staty').val(),
+							color: 'white',
+							font: {
+								family: 'Courier New',
+								size: 18,
+							}
+						},
+						tickfont: {
+							color: 'white',
+							family: 'Courier New',
+							size: 15
+						},
+						showline: true,
+						gridcolor: gridcolor,
+						linewidth: 1,
+						color: 'white'
 					},
+
 					automargin: true,
 					plot_bgcolor: 'black',
-					paper_bgcolor: 'black'
+					paper_bgcolor: 'black',
+					showlegend: false
+
 					
 				};
 				
@@ -533,14 +568,64 @@ $(document).ready(function() {
 					height: 800,
 					scene: {
 						xaxis: {
-							title: $('#statx').val()
+							title:{
+								text: $('#statx').val(),
+								color: 'white',
+								font: {
+									family: 'Courier New',
+									size: 18,
+								}
+							},
+							tickfont: {
+								color: 'white',
+								family: 'Courier New',
+								size: 15
+							},
+							showline: true,
+							linecolor: 'white',
+							gridcolor: gridcolor,
+							linewidth: 1,
+							color: 'white'
 						},
 						yaxis: {
-							title: $('#staty').val()
+							title: {
+								text: $('#staty').val(),
+								color: 'white',
+								font: {
+									family: 'Courier New',
+									size: 18,
+								}
+							},
+							tickfont: {
+								color: 'white',
+								family: 'Courier New',
+								size: 15
+							},
+							showline: true,
+							gridcolor: gridcolor,
+							linewidth: 1,
+							color: 'white'
 						},
 						zaxis: {
-							title: $('#statz').val()
-						}
+							title: {
+								text: $('#statz').val(),
+								color: 'white',
+								font: {
+									family: 'Courier New',
+									size: 18,
+								}
+							},
+							tickfont: {
+								color: 'white',
+								family: 'Courier New',
+								size: 15
+							},
+							showline: true,
+							gridcolor: gridcolor,
+							linewidth: 1,
+							color: 'white'
+						},
+						showlegend: false
 					},
 					  margin: {
 						l: 10,

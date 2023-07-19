@@ -146,7 +146,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		Uses regular season NBA lineup data from selected year.</br>
 		Sources: stats.nba.com, Swar Patel's <a href="https://github.com/swar/nba_api">nba_api package</a>, sklearn, plotly.</br>
 		</br>
-		Created by Justin Cousineau, 2022.
+		Created by Justin Cousineau, 2022-23.
 		</h5>
 		<form id="form">
 			Season: 
@@ -317,7 +317,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 			</select>
 			<br>
 			<br>
-			NOTE: Try rotating the graph when the graph features Z-axis values!
+			NOTE: Try rotating the graph while it features Z-axis values!
 			<br>
 			<!-- <br> -->
 			<!-- Lineup Size:  -->
@@ -326,12 +326,23 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 			<br>
 			Min. Minutes Played: 
 			<input type="text" id="min_mp" class="textInput" value="100">
-			
+			<br>
+			<br>
+			K-Means Clusters: 
+			<input type="text" id="kmclust" class="textInput" value="1">
 			<br>
 			<br>
 			<input type="checkbox" class="linregCheckbox" id="linreg" name="linreg" value="1">
 			Linear Regression
 			<!-- <label for="linreg">Linear Regression</label> -->
+			<br>
+			<br>
+			<div class="lr_container">
+				<div id="rsq_container" contenteditable="false"></div>
+	<!-- 			<div id="int_container" contenteditable="true"></div>
+				<div id="coef1_container" contenteditable="true"></div>
+				<div id="coef2_container" contenteditable="true"></div> -->
+			</div>
 			<br>
 			<br>
 			<button type="submit" name="button" >Submit</button>
@@ -340,12 +351,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		</br>
 		</br>
 		</br>
-		<div class="lr_container">
-			<div id="rsq_container" contenteditable="true"></div>
-<!-- 			<div id="int_container" contenteditable="true"></div>
-			<div id="coef1_container" contenteditable="true"></div>
-			<div id="coef2_container" contenteditable="true"></div> -->
-		</div>
+
     </div>
 	
 	
@@ -373,7 +379,8 @@ $(document).ready(function() {
 			statz : $('#statz').val(),
 			groupquantity : $('#groupquantity').val(),
 			min_mp : $('#min_mp').val(),
-			linreg: $('#linreg:checked').val()
+			kmclust : $('#kmclust').val(),
+			linreg : $('#linreg:checked').val()
 
 		},
 		type : 'POST',
@@ -383,6 +390,7 @@ $(document).ready(function() {
 			//check if there is a statz that can be used
 			// if no, then plot 2d scat chart
 			if (data.z.constructor == String) {
+				console.log(data.color);
 				// if linear regression button is checked, plot line
 				if ($('#linreg:checked').val() == 1){
 					var trace1 = {
@@ -391,7 +399,8 @@ $(document).ready(function() {
 						mode: 'markers',
 						type: 'scatter',
 						text: data.lineups,
-						marker:{color: '#43FF33'},
+						//marker:{color: '#43FF33'},
+						marker:{color: data.color},
 						name: 'Lineups'
 					};
 
@@ -399,7 +408,7 @@ $(document).ready(function() {
 						x: data.x,
 						y: data.y_pred,
 						mode: 'lines',
-						marker:{color: '#43FF33'},
+						marker:{color: data.color},
 						name: 'Linear Regression'
 					};
 					
@@ -426,7 +435,7 @@ $(document).ready(function() {
 					mode: 'markers',
 					type: 'scatter',
 					text: data.lineups,
-					marker:{color: '#43FF33'},
+					marker:{color: data.color},
 					name: 'Lineups'
 					};
 
@@ -506,7 +515,7 @@ $(document).ready(function() {
 					  mode: 'markers',
 					  type: 'scatter3d',
 					  text: data.lineups,
-					  marker:{color: '#43FF33',size:5},
+					  marker:{color: data.color,size:5},
 					  name: 'Lineups'
 
 					};
@@ -552,7 +561,7 @@ $(document).ready(function() {
 					  mode: 'markers',
 					  type: 'scatter3d',
 					  text: data.lineups,
-					  marker:{color: '#43FF33',size:5},
+					  marker:{color: data.color,size:5},
 					  name: 'Lineups'
 					};
 

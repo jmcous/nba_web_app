@@ -5,5 +5,5 @@ datetime
 numpy
 scikit-learn
 gunicorn
-sklearn
 google-cloud-bigquery
+db-dtypes

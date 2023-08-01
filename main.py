@@ -16,6 +16,11 @@ from sklearn.linear_model import LinearRegression
 from sklearn import cluster
 from google.cloud import bigquery
 
+def convert_int64(value):
+    if isinstance(value, np.int64):
+        return int(value)
+    return value
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET','POST'])
@@ -56,9 +61,9 @@ def nbaSubmit():
             query_job = client.query(query)
             result = query_job.to_dataframe()
 
-            x = result[statx].tolist()
-            y = result[staty].tolist()
-            z = result[statz].tolist()
+            x = [convert_int64(v) for v in result[statx].tolist()]
+            y = [convert_int64(v) for v in result[staty].tolist()]
+            z = [convert_int64(v) for v in result[statz].tolist()]
 
         # if there is just x and y data selected
         else:
@@ -72,8 +77,8 @@ def nbaSubmit():
             query_job = client.query(query)
             result = query_job.to_dataframe()
 
-            x = result[statx].tolist()
-            y = result[staty].tolist()
+            x = [convert_int64(v) for v in result[statx].tolist()]
+            y = [convert_int64(v) for v in result[staty].tolist()]
             z = ''
 
         lineups = result['GROUP_NAME'].tolist()

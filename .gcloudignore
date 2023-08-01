@@ -21,3 +21,5 @@ __pycache__/
 static/
 app.py
 templates/app_index.html
+data/*
+data/

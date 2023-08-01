@@ -7,7 +7,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Lineup Analysis</title>
+    <title>NBA Lineup Analyzer</title>
 </head>
 <style>
 
@@ -141,7 +141,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 <body>
 
 	<div class="sidenav">
-		<h1>5-Man Lineup Analyzer</h1>
+		<h1>NBA Lineup Analyzer</h1>
 		<h5>
 		Uses regular season NBA lineup data from selected year.</br>
 		Sources: stats.nba.com, Swar Patel's <a href="https://github.com/swar/nba_api">nba_api package</a>, sklearn, plotly.</br>
@@ -160,6 +160,14 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 				<option value="2016-17">2016-17</option>
 				<option value="2015-16">2015-16</option>
 				<option value="2014-15">2014-15</option>
+			</select>
+			<br>
+			<br>
+			Group Size: 
+			<select name="groupquantity" id="groupquantity">
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
 			</select>
 			<br>
 			<br>

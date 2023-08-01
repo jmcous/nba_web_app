@@ -14,7 +14,8 @@ from nba_api.stats.library.parameters import *
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn import cluster
-            
+from google.cloud import bigquery
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET','POST'])
@@ -26,7 +27,7 @@ def nbaSubmit():
     if request.method == "POST":
         
         # group_quantity = int(request.form['groupquantity'])
-        group_quantity = 5;
+        group_quantity = float(request.form['groupquantity']);
         season = str(request.form['season'])
         min_mp = float(request.form['min_mp'])
         statx = str(request.form['statx'])
@@ -41,64 +42,41 @@ def nbaSubmit():
         except KeyError:
             linreg = 0
         
-        season = season.replace('-','_')
-        filename = 'data/' + season+'_'+str(group_quantity)+'.csv'
-        result = pd.read_csv(filename)
-        
-        # # get base and advance data from nba_api 
+        client = bigquery.Client()
 
-        # base_lineups = leaguedashlineups.LeagueDashLineups(group_quantity=group_quantity,season=season,measure_type_detailed_defense=MeasureTypeDetailedDefense().base)
-
-        # advanced_lineups = leaguedashlineups.LeagueDashLineups(group_quantity=group_quantity,season=season,measure_type_detailed_defense=MeasureTypeDetailedDefense().advanced)
-       
-        # # convert returns to dataframes
-        # dfb = base_lineups.get_data_frames()[0]
-        # dfa = advanced_lineups.get_data_frames()[0]
-        
-        
-        # # append dataframes
-        # result = pd.merge(dfb,dfa,on="GROUP_ID")
-         
-        
-        # filter based on minimum minutes
-        result_min = result[result['MIN_x'] >= min_mp]
-        
-        # get x and y stats
-        if statx in result_min.columns:
-            x = result_min[statx].tolist()
-        elif (statx+'_x') in result_min.columns:
-            statx = statx + "_x"
-            x = result_min[statx].tolist()
-        else:
-            a=1
-            #print('problem with variable x')
-        
-        
-        if staty in result_min.columns:
-            y = result_min[staty].tolist()
-        elif (staty+'_x') in result_min.columns:
-            staty = staty + "_x"
-            y = result_min[staty].tolist()
-        else:
-            a=1
-            #print('problem with variable y')
-            
-            
-        # if a statz variable is selected, use it    
+        # if a z axis value is selected...
         if statz != '---':            
-            if statz in result_min.columns:
-                z = result_min[staty].tolist()
-            elif (statz+'_x') in result_min.columns:
-                statz = statz + "_x"
-                z = result_min[statz].tolist()
-            else:
-                a=1
-                #print('problem with variable z')
-        else:
-            z = 'null'
 
-        lineups = result_min['GROUP_NAME_x'].tolist()
-        print(kmclust)
+            query = f"""
+                SELECT {statx}, {staty}, {statz}, GROUP_NAME
+                FROM `nba5man.lineup_data.lineups`
+                WHERE season = '{season}' AND lineup_size = {group_quantity} 
+                AND MIN >= {min_mp}
+            """
+            query_job = client.query(query)
+            result = query_job.to_dataframe()
+
+            x = result[statx].tolist()
+            y = result[staty].tolist()
+            z = result[statz].tolist()
+
+        # if there is just x and y data selected
+        else:
+            query = f"""
+                SELECT {statx}, {staty}, GROUP_NAME
+                FROM `nba5man.lineup_data.lineups`
+                WHERE season = '{season}' AND lineup_size = {group_quantity} 
+                AND MIN >= {min_mp}
+            """
+
+            query_job = client.query(query)
+            result = query_job.to_dataframe()
+
+            x = result[statx].tolist()
+            y = result[staty].tolist()
+            z = ''
+
+        lineups = result['GROUP_NAME'].tolist()
         # get colors from kmeans clustering
         if (kmclust > 1):
             if statz != '---':            
@@ -143,9 +121,6 @@ def nbaSubmit():
             r_sq = model.score(X,Y)
             intercept, coefficients = model.intercept_, model.coef_.tolist()
             results = [r_sq, intercept, coefficients]
-
-            #print(r_sq)
-            print(results)
             
             return jsonify({'x' : x, 'y' : y, 'z': z, 'x_pred': xx_pred.flatten().tolist(), 'y_pred': yy_pred.flatten().tolist(), 'z_pred': predicted.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups, 'color' : color.tolist()})
 

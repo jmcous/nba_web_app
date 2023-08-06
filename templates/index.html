@@ -323,6 +323,43 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 				<option value="POSS">POSS</option>
 				<option value="PIE">PIE</option>
 			</select>
+			</br>
+			</br>
+			Team:
+			<select id="team" name="team">
+				<option value="ALL" selected="selected">ALL</option>
+				<option value="ATL">ATL</option>
+				<option value="BOS">BOS</option>
+				<option value="BKN">BKN</option>
+				<option value="CHA">CHA</option>
+				<option value="CHI">CHI</option>
+				<option value="CLE">CLE</option>
+				<option value="DAL">DAL</option>
+				<option value="DEN">DEN</option>
+				<option value="DET">DET</option>
+				<option value="GSW">GSW</option>
+				<option value="HOU">HOU</option>
+				<option value="IND">IND</option>
+				<option value="LAC">LAC</option>
+				<option value="LAL">LAL</option>
+				<option value="MEM">MEM</option>
+				<option value="MIA">MIA</option>
+				<option value="MIL">MIL</option>
+				<option value="MIN">MIN</option>
+				<option value="NOP">NOP</option>
+				<option value="NYK">NYK</option>
+				<option value="OKC">OKC</option>
+				<option value="ORL">ORL</option>
+				<option value="PHI">PHI</option>
+				<option value="PHX">PHX</option>
+				<option value="POR">POR</option>
+				<option value="SAC">SAC</option>
+				<option value="SAS">SAS</option>
+				<option value="TOR">TOR</option>
+				<option value="UTA">UTA</option>
+				<option value="WAS">WAS</option>
+			</select>
+
 			<br>
 			<br>
 			NOTE: Try rotating the graph while it features Z-axis values!
@@ -375,298 +412,8 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 
 <!-- 	<script src="static/nbaSubmit.js"></script>	 -->
 <script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
-<script type="text/javascript">
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
-$(document).ready(function() {
-	$('#form').on('submit',function(e){
-		$.ajax({
-		data : {
-			season : $('#season').val(),
-			statx : $('#statx').val(),
-			staty : $('#staty').val(),
-			statz : $('#statz').val(),
-			groupquantity : $('#groupquantity').val(),
-			min_mp : $('#min_mp').val(),
-			kmclust : $('#kmclust').val(),
-			linreg : $('#linreg:checked').val()
-
-		},
-		type : 'POST',
-		url : '/nbaSubmit'
-		})
-		.done(function(data){
-			//check if there is a statz that can be used
-			// if no, then plot 2d scat chart
-			if (data.z.constructor == String) {
-				console.log(data.color);
-				// if linear regression button is checked, plot line
-				if ($('#linreg:checked').val() == 1){
-					var trace1 = {
-						x: data.x,
-						y: data.y,
-						mode: 'markers',
-						type: 'scatter',
-						text: data.lineups,
-						//marker:{color: '#43FF33'},
-						marker:{color: data.color},
-						name: 'Lineups'
-					};
-
-					var trace2 = {
-						x: data.x,
-						y: data.y_pred,
-						mode: 'lines',
-						marker:{color: data.color},
-						name: 'Linear Regression'
-					};
-					
-					var plotdata = [trace1,trace2];
-					
-					const squared = "2"
-					var rsq_string = "R"+squared.sup()+": "+data.pred_results[0];
-					var int_string = "Intercept: "+data.pred_results[1];
-					var coef_string = "Coefficient: "+data.pred_results[2];
-					
-					const rsq_container = document.getElementById('rsq_container');
-					const int_container = document.getElementById('int_container');
-					const coef1_container = document.getElementById('coef1_container');
-
-					rsq_container.innerHTML = rsq_string;
-					//int_container.innerHTML = int_string;
-					//coef1_container.innerHTML = coef_string;
-
-					
-				} else { // if it is not selected then just plot the scatters
-					var trace1 = {
-					x: data.x,
-					y: data.y,
-					mode: 'markers',
-					type: 'scatter',
-					text: data.lineups,
-					marker:{color: data.color},
-					name: 'Lineups'
-					};
-
-					var plotdata = [trace1];
-					
-					var lr_string = "";
-					const rsq_container = document.getElementById('rsq_container');
-					rsq_container.innerHTML = lr_string;
-				}
-				var gridcolor = 'rgba(255, 255, 255,0.3)'
-				var layout = {
-					height: 600,
-					xaxis: {
-						title:{
-							text: $('#statx').val(),
-							color: 'white',
-							font: {
-								family: 'Courier New',
-								size: 18,
-							}
-						},
-						tickfont: {
-							color: 'white',
-							family: 'Courier New',
-							size: 15
-						},
-						showline: true,
-						linecolor: 'white',
-						gridcolor: gridcolor,
-						linewidth: 1,
-						color: 'white'
-					},
-					yaxis: {
-						title: {
-							text: $('#staty').val(),
-							color: 'white',
-							font: {
-								family: 'Courier New',
-								size: 18,
-							}
-						},
-						tickfont: {
-							color: 'white',
-							family: 'Courier New',
-							size: 15
-						},
-						showline: true,
-						gridcolor: gridcolor,
-						linewidth: 1,
-						color: 'white'
-					},
-
-					automargin: true,
-					plot_bgcolor: 'black',
-					paper_bgcolor: 'black',
-					showlegend: false
-
-					
-				};
-				
-				var config = {responsive: true};
-
-				
-				
-				Plotly.newPlot('plot', plotdata, layout,config);
-				
-			} else {//plot 3d scatter plot
-
-			
-				// if linear regression button is checked, get different traces
-				if ($('#linreg:checked').val() == 1){
-				
-					var trace1 = {
-					  x: data.x,
-					  y: data.y,
-					  z: data.z,
-					  mode: 'markers',
-					  type: 'scatter3d',
-					  text: data.lineups,
-					  marker:{color: data.color,size:5},
-					  name: 'Lineups'
-
-					};
-
-					var trace2 = {
-						x: data.x_pred,
-						y: data.y_pred,
-						z: data.z_pred,
-						type: 'mesh3d',
-						colorscale: 'rgb(255, 0, 255)',
-						opacity: 0.5,
-						name: 'Linear Regression'
-					};
-					
-					
-					var plotdata = [trace1,trace2];
-					
-					const squared = "2"
-					var rsq_string = "R"+squared.sup()+": "+data.pred_results[0];
-					var int_string = "Intercept: "+data.pred_results[1];
-					var coef1_string = "Coefficients: "+data.pred_results[2][0]+",";
-					var coef2_string = data.pred_results[2][1];
-					
-					const rsq_container = document.getElementById('rsq_container');
-					const int_container = document.getElementById('int_container');
-					const coef1_container = document.getElementById('coef1_container');
-					const coef2_container = document.getElementById('coef2_container');
-
-
-					rsq_container.innerHTML = rsq_string;
-					//int_container.innerHTML = int_string;
-					//coef1_container.innerHTML = coef1_string;
-					//coef2_container.innerHTML = coef2_string;
-
-					
-					
-				} else {
-				
-					var trace1 = {
-					  x: data.x,
-					  y: data.y,
-					  z: data.z,
-					  mode: 'markers',
-					  type: 'scatter3d',
-					  text: data.lineups,
-					  marker:{color: data.color,size:5},
-					  name: 'Lineups'
-					};
-
-					
-					var plotdata = [trace1];	
-					
-					var lr_string = "";
-					const rsq_container = document.getElementById('rsq_container');
-					rsq_container.innerHTML = lr_string;
-				}
-				
-				var layout = {
-					height: 800,
-					scene: {
-						xaxis: {
-							title:{
-								text: $('#statx').val(),
-								color: 'white',
-								font: {
-									family: 'Courier New',
-									size: 18,
-								}
-							},
-							tickfont: {
-								color: 'white',
-								family: 'Courier New',
-								size: 15
-							},
-							showline: true,
-							linecolor: 'white',
-							gridcolor: gridcolor,
-							linewidth: 1,
-							color: 'white'
-						},
-						yaxis: {
-							title: {
-								text: $('#staty').val(),
-								color: 'white',
-								font: {
-									family: 'Courier New',
-									size: 18,
-								}
-							},
-							tickfont: {
-								color: 'white',
-								family: 'Courier New',
-								size: 15
-							},
-							showline: true,
-							gridcolor: gridcolor,
-							linewidth: 1,
-							color: 'white'
-						},
-						zaxis: {
-							title: {
-								text: $('#statz').val(),
-								color: 'white',
-								font: {
-									family: 'Courier New',
-									size: 18,
-								}
-							},
-							tickfont: {
-								color: 'white',
-								family: 'Courier New',
-								size: 15
-							},
-							showline: true,
-							gridcolor: gridcolor,
-							linewidth: 1,
-							color: 'white'
-						},
-						showlegend: false
-					},
-					  margin: {
-						l: 10,
-						r: 10,
-						b: 10,
-						t: 10,
-						pad: 4
-					},
-					plot_bgcolor: 'black',
-					paper_bgcolor: 'black',
-				};
-				
-				var config = {responsive: true};
-				
-				Plotly.newPlot('plot', plotdata, layout,config);				
-				
-			
-			}
-		
-		
-		});
-		e.preventDefault();
-	});
-});
 
 </script>
 

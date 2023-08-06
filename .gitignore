@@ -6,3 +6,4 @@ app.py
 templates/app_index.html
 data/
 data/*
+*.ipynb*

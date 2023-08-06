@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request,json
+from flask import Flask, jsonify, render_template, request,json, send_from_directory
 import pandas as pd
 import nba_api
 from datetime import datetime
@@ -22,6 +22,10 @@ def convert_int64(value):
     return value
 
 app = Flask(__name__)
+
+@app.route('/static/<path:filename>')
+def custom_static(filename):
+    return send_from_directory(app.static_folder, filename, mimetype='application/javascript' if filename.endswith('.js') else None)
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -53,7 +57,7 @@ def nbaSubmit():
         if statz != '---':            
 
             query = f"""
-                SELECT {statx}, {staty}, {statz}, GROUP_NAME
+                SELECT {statx}, {staty}, {statz}, GROUP_NAME, TEAM_ABBREVIATION
                 FROM `nba5man.lineup_data.lineups`
                 WHERE season = '{season}' AND lineup_size = {group_quantity} 
                 AND MIN >= {min_mp}
@@ -68,7 +72,7 @@ def nbaSubmit():
         # if there is just x and y data selected
         else:
             query = f"""
-                SELECT {statx}, {staty}, GROUP_NAME
+                SELECT {statx}, {staty}, GROUP_NAME, TEAM_ABBREVIATION
                 FROM `nba5man.lineup_data.lineups`
                 WHERE season = '{season}' AND lineup_size = {group_quantity} 
                 AND MIN >= {min_mp}
@@ -82,6 +86,7 @@ def nbaSubmit():
             z = ''
 
         lineups = result['GROUP_NAME'].tolist()
+        teams   = result['TEAM_ABBREVIATION'].tolist()
         # get colors from kmeans clustering
         if (kmclust > 1):
             if statz != '---':            
@@ -127,7 +132,9 @@ def nbaSubmit():
             intercept, coefficients = model.intercept_, model.coef_.tolist()
             results = [r_sq, intercept, coefficients]
             
-            return jsonify({'x' : x, 'y' : y, 'z': z, 'x_pred': xx_pred.flatten().tolist(), 'y_pred': yy_pred.flatten().tolist(), 'z_pred': predicted.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups, 'color' : color.tolist()})
+            return jsonify({'x' : x, 'y' : y, 'z': z,
+                             'x_pred': xx_pred.flatten().tolist(), 'y_pred': yy_pred.flatten().tolist(),'z_pred': predicted.tolist(),
+                               'pred_results' : results, 'z' : z, 'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
 
         
         elif linreg:
@@ -146,11 +153,14 @@ def nbaSubmit():
             intercept, coefficients = model.intercept_, model.coef_.tolist()
             results = [r_sq, intercept, coefficients[0]]
             print(results)
-            return jsonify({'x' : x, 'y' : y, 'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z, 'lineups' : lineups, 'color' : color.tolist()})
+            return jsonify({'x' : x, 'y' : y, 
+                            'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z,
+                              'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
 
 
         
-        return jsonify({'x' : x, 'y' : y, 'z' : z, 'lineups' : lineups, 'color' : color.tolist()})
+        return jsonify({'x' : x, 'y' : y, 'z' : z,
+                         'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
 
 
 

@@ -137,6 +137,67 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		bottom: 15%;
 		left: 2%;
 	}
+
+	/* The sidebar */
+	.sidebar {
+		height: 100%;
+		width: 0;
+		position: fixed;
+		z-index: 2; /* Ensure it's above other content */
+		top: 0;
+		right: 0;
+		background-color: #1E1E1E; /* Dark background to match your site */
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 60px;
+		font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+	}
+
+	/* Sidebar content */
+	.sidebar p {
+		padding: 10px 15px;
+		text-align: left;
+		font-size: 16px; /* Adjusted for better fit */
+		color: white;
+	}
+
+	/* Glossary title */
+	.sidebar h2 {
+		color: white;
+		font-size: 24px;
+		padding-left: 15px;
+	}
+
+	/* Close button */
+	.sidebar .closebtn {
+		position: absolute;
+		top: 0;
+		right: 25px;
+		font-size: 36px;
+		margin-left: 50px;
+		color: white; /* Match text color */
+		text-decoration: none; /* Remove any default styling */
+	}
+
+	/* Button styling */
+	button {
+		padding: 5px 10px;
+		font-size: 14px; /* Adjusted for better fit */
+		background-color: #1E1E1E; /* Dark background to match your site */
+		color: white;
+		border: none;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+	}
+
+	button:hover {
+		background-color: #575757; /* Slightly lighter on hover */
+	}
+
+
+
+
+
 </style>
 <body>
 
@@ -148,6 +209,9 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		</br>
 		Created by Justin Cousineau, 2022-23.
 		</h5>
+		<button type="button" onclick="openGlossary()">Open Glossary</button>
+		<br>
+		<br>
 		<form id="form">
 			Season: 
 			<select name="season" id="season">
@@ -389,6 +453,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 			<br>
 			<button type="submit" name="button" >Submit</button>
 
+
 		</form>
 		</br>
 		</br>
@@ -402,6 +467,63 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		<div class="output" id="output"></div>
 		<div class="plot" id="plot"></div>
 	</div>
+
+	<!-- Sidebar Glossary -->
+	<div id="glossarySidebar" class="sidebar">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeGlossary()">×</a>
+		<h2>Glossary</h2>
+		<p><strong>GP (Games Played):</strong> The total number of games a player or team has participated in.</p>
+		<p><strong>W (Wins):</strong> The total number of games won by a player or team.</p>
+		<p><strong>L (Losses):</strong> The total number of games lost by a player or team.</p>
+		<p><strong>W_PCT (Win Percentage):</strong> The percentage of games won out of the total games played.</p>
+		<p><strong>MIN (Minutes):</strong> The total number of minutes played.</p>
+		<p><strong>FGM (Field Goals Made):</strong> The total number of field goals successfully made.</p>
+		<p><strong>FGA (Field Goals Attempted):</strong> The total number of field goal attempts.</p>
+		<p><strong>FG_PCT (Field Goal Percentage):</strong> The percentage of field goals made out of the total attempted.</p>
+		<p><strong>FG3M (Three-Point Field Goals Made):</strong> The total number of three-point shots successfully made.</p>
+		<p><strong>FG3A (Three-Point Field Goals Attempted):</strong> The total number of three-point shot attempts.</p>
+		<p><strong>FG3_PCT (Three-Point Field Goal Percentage):</strong> The percentage of three-point shots made out of the total attempted.</p>
+		<p><strong>FTM (Free Throws Made):</strong> The total number of free throws successfully made.</p>
+		<p><strong>FTA (Free Throws Attempted):</strong> The total number of free throw attempts.</p>
+		<p><strong>FT_PCT (Free Throw Percentage):</strong> The percentage of free throws made out of the total attempted.</p>
+		<p><strong>OREB (Offensive Rebounds):</strong> The total number of rebounds collected on the offensive end of the court.</p>
+		<p><strong>DREB (Defensive Rebounds):</strong> The total number of rebounds collected on the defensive end of the court.</p>
+		<p><strong>REB (Total Rebounds):</strong> The combined total of offensive and defensive rebounds.</p>
+		<p><strong>AST (Assists):</strong> The total number of assists made.</p>
+		<p><strong>TOV (Turnovers):</strong> The total number of times a player or team has lost possession of the ball to the opposing team.</p>
+		<p><strong>STL (Steals):</strong> The total number of times a player or team has taken the ball away from an opponent.</p>
+		<p><strong>BLK (Blocks):</strong> The total number of shots blocked.</p>
+		<p><strong>BLKA (Blocks Against):</strong> The total number of times a player's shot has been blocked by an opponent.</p>
+		<p><strong>PF (Personal Fouls):</strong> The total number of personal fouls committed.</p>
+		<p><strong>PFD (Personal Fouls Drawn):</strong> The total number of personal fouls drawn by a player.</p>
+		<p><strong>PTS (Points):</strong> The total number of points scored.</p>
+		<p><strong>PLUS_MINUS:</strong> The point differential when a player or team is on the court.</p>
+		<p><strong>E_OFF_RATING (Estimated Offensive Rating):</strong> An estimate of points produced (players) or scored (teams) per 100 possessions.</p>
+		<p><strong>OFF_RATING (Offensive Rating):</strong> Points scored per 100 possessions by a team.</p>
+		<p><strong>E_DEF_RATING (Estimated Defensive Rating):</strong> An estimate of points allowed per 100 possessions.</p>
+		<p><strong>DEF_RATING (Defensive Rating):</strong> Points allowed per 100 possessions by a team.</p>
+		<p><strong>E_NET_RATING (Estimated Net Rating):</strong> An estimate of point differential per 100 possessions.</p>
+		<p><strong>NET_RATING (Net Rating):</strong> Point differential per 100 possessions.</p>
+		<p><strong>AST_PCT (Assist Percentage):</strong> An estimate of the percentage of teammate field goals a player assisted while on the floor.</p>
+		<p><strong>AST_TO (Assist to Turnover Ratio):</strong> The ratio of assists to turnovers.</p>
+		<p><strong>AST_RATIO (Assist Ratio):</strong> The number of assists a player averages per 100 possessions used.</p>
+		<p><strong>OREB_PCT (Offensive Rebound Percentage):</strong> An estimate of the percentage of available offensive rebounds a player grabbed while on the floor.</p>
+		<p><strong>DREB_PCT (Defensive Rebound Percentage):</strong> An estimate of the percentage of available defensive rebounds a player grabbed while on the floor.</p>
+		<p><strong>REB_PCT (Total Rebound Percentage):</strong> An estimate of the percentage of available rebounds a player grabbed while on the floor.</p>
+		<p><strong>TM_TOV_PCT (Turnover Percentage):</strong> An estimate of turnovers per 100 plays.</p>
+		<p><strong>EFG_PCT (Effective Field Goal Percentage):</strong> This statistic adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal.</p>
+		<p><strong>TS_PCT (True Shooting Percentage):</strong> A measure of shooting efficiency that takes into account field goals, 3-point field goals, and free throws.</p>
+		<p><strong>E_PACE (Estimated Pace):</strong> An estimate of the number of possessions per 48 minutes by a team.</p>
+		<p><strong>PACE:</strong> The number of possessions per 48 minutes by a team.</p>
+		<p><strong>PACE_PER40:</strong> The number of possessions per 40 minutes by a team.</p>
+		<p><strong>POSS (Possessions):</strong> The total number of possessions by a team.</p>
+		<p><strong>PIE (Player Impact Estimate):</strong> A metric that provides an estimate of a player's overall impact on a game.</p>
+		<br>
+		<br>
+	</div>
+
+
+
 </body>
 
 	

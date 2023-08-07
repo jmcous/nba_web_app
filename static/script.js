@@ -344,9 +344,12 @@ $(document).ready(function() {
 	
 
 
-	
-
-
-
-
 });
+
+function openGlossary() {
+	document.getElementById("glossarySidebar").style.width = "250px";
+}
+
+function closeGlossary() {
+	document.getElementById("glossarySidebar").style.width = "0";
+}

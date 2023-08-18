@@ -7,3 +7,4 @@ templates/app_index.html
 data/
 data/*
 *.ipynb*
+skipped_group_ids.txt

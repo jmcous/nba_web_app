@@ -90,19 +90,53 @@ def nbaSubmit():
         # get colors from kmeans clustering
         if (kmclust > 1):
             if statz != '---':            
-                kmeans = cluster.KMeans(n_clusters=kmclust,
-                                        random_state=42).fit(np.column_stack((np.array(x),np.array(y),np.array(z))))
-                color = kmeans.labels_
+                color = perform_kmeans_clustering(x, y, z, n_clusters=kmclust)
             else:
-                kmeans = cluster.KMeans(n_clusters=kmclust,
-                                        random_state=42).fit(np.column_stack((np.array(x),np.array(y))))
-                color = kmeans.labels_
+                color = perform_kmeans_clustering(x, y, n_clusters=kmclust)
+
         else:
             color = np.array('#43FF33')
 
         # if linreg, return the json with predicted data
         if (linreg==1) and (statz != '---'):
         
+            xx_pred, yy_pred, predicted, results = perform_linear_regression(x, y, z)
+            
+            return jsonify({'x' : x, 'y' : y, 'z': z,
+                             'x_pred': xx_pred.flatten().tolist(), 'y_pred': yy_pred.flatten().tolist(),'z_pred': predicted.tolist(),
+                               'pred_results' : results, 'z' : z, 'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
+
+        
+        elif linreg:
+
+            y_pred, results = perform_linear_regression(x, y)
+
+            return jsonify({'x' : x, 'y' : y, 
+                            'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z,
+                              'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
+
+
+        
+        return jsonify({'x' : x, 'y' : y, 'z' : z,
+                         'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
+
+
+
+from sklearn.cluster import KMeans
+import numpy as np
+
+def perform_kmeans_clustering(x, y, z=None, n_clusters=2):
+    if z is not None:
+        data = np.column_stack((np.array(x), np.array(y), np.array(z)))
+    else:
+        data = np.column_stack((np.array(x), np.array(y)))
+
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42).fit(data)
+    return kmeans.labels_
+
+
+def perform_linear_regression(x, y, z=None):
+        if z is not None:
             # Convert to numpy arrays/dataframes/reshape
             x_ = np.array(x)
             y_ = np.array(y)
@@ -131,13 +165,10 @@ def nbaSubmit():
             r_sq = model.score(X,Y)
             intercept, coefficients = model.intercept_, model.coef_.tolist()
             results = [r_sq, intercept, coefficients]
-            
-            return jsonify({'x' : x, 'y' : y, 'z': z,
-                             'x_pred': xx_pred.flatten().tolist(), 'y_pred': yy_pred.flatten().tolist(),'z_pred': predicted.tolist(),
-                               'pred_results' : results, 'z' : z, 'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
 
-        
-        elif linreg:
+            return xx_pred, yy_pred, predicted, results
+
+        else:
             # Convert to numpy arrays/reshape
             x_ = np.array(x).reshape(-1,1)
             y_ = np.array(y)
@@ -152,18 +183,8 @@ def nbaSubmit():
             r_sq = model.score(x_,y_)
             intercept, coefficients = model.intercept_, model.coef_.tolist()
             results = [r_sq, intercept, coefficients[0]]
-            print(results)
-            return jsonify({'x' : x, 'y' : y, 
-                            'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z,
-                              'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
 
-
-        
-        return jsonify({'x' : x, 'y' : y, 'z' : z,
-                         'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
-
-
-
+            return y_pred, results
 
 
 

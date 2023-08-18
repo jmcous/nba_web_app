@@ -4,3 +4,5 @@ venv/
 __pycache__/
 app.py
 templates/app_index.html
+data/*
+*.ipynb

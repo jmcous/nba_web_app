@@ -4,5 +4,11 @@ venv/
 __pycache__/
 app.py
 templates/app_index.html
+<<<<<<< HEAD
 data/*
 *.ipynb
+=======
+data/
+data/*
+*.ipynb*
+>>>>>>> sql_dev

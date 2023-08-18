@@ -7,7 +7,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA Lineup Analysis</title>
+    <title>NBA Lineup Analyzer</title>
 </head>
 <style>
 
@@ -137,17 +137,81 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		bottom: 15%;
 		left: 2%;
 	}
+
+	/* The sidebar */
+	.sidebar {
+		height: 100%;
+		width: 0;
+		position: fixed;
+		z-index: 2; /* Ensure it's above other content */
+		top: 0;
+		right: 0;
+		background-color: #1E1E1E; /* Dark background to match your site */
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 60px;
+		font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+	}
+
+	/* Sidebar content */
+	.sidebar p {
+		padding: 10px 15px;
+		text-align: left;
+		font-size: 16px; /* Adjusted for better fit */
+		color: white;
+	}
+
+	/* Glossary title */
+	.sidebar h2 {
+		color: white;
+		font-size: 24px;
+		padding-left: 15px;
+	}
+
+	/* Close button */
+	.sidebar .closebtn {
+		position: absolute;
+		top: 0;
+		right: 25px;
+		font-size: 36px;
+		margin-left: 50px;
+		color: white; /* Match text color */
+		text-decoration: none; /* Remove any default styling */
+	}
+
+	/* Button styling */
+	button {
+		padding: 5px 10px;
+		font-size: 14px; /* Adjusted for better fit */
+		background-color: #1E1E1E; /* Dark background to match your site */
+		color: white;
+		border: none;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+	}
+
+	button:hover {
+		background-color: #575757; /* Slightly lighter on hover */
+	}
+
+
+
+
+
 </style>
 <body>
 
 	<div class="sidenav">
-		<h1>5-Man Lineup Analyzer</h1>
+		<h1>NBA Lineup Analyzer</h1>
 		<h5>
 		Uses regular season NBA lineup data from selected year.</br>
 		Sources: stats.nba.com, Swar Patel's <a href="https://github.com/swar/nba_api">nba_api package</a>, sklearn, plotly.</br>
 		</br>
 		Created by Justin Cousineau, 2022-23.
 		</h5>
+		<button type="button" onclick="openGlossary()">Open Glossary</button>
+		<br>
+		<br>
 		<form id="form">
 			Season: 
 			<select name="season" id="season">
@@ -160,6 +224,14 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 				<option value="2016-17">2016-17</option>
 				<option value="2015-16">2015-16</option>
 				<option value="2014-15">2014-15</option>
+			</select>
+			<br>
+			<br>
+			Group Size: 
+			<select name="groupquantity" id="groupquantity">
+				<option value="3" selected="selected">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
 			</select>
 			<br>
 			<br>
@@ -315,17 +387,51 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 				<option value="POSS">POSS</option>
 				<option value="PIE">PIE</option>
 			</select>
+
 			<br>
 			<br>
 			NOTE: Try rotating the graph while it features Z-axis values!
 			<br>
-			<!-- <br> -->
-			<!-- Lineup Size:  -->
-			<!-- <input type="text" id="groupquantity" value="5"> -->
-			<!-- <br> -->
+			<br>
+
+			Highlight Team:
+			<select id="team" name="team">
+				<option value="ALL" selected="selected">ALL</option>
+				<option value="ATL">ATL</option>
+				<option value="BOS">BOS</option>
+				<option value="BKN">BKN</option>
+				<option value="CHA">CHA</option>
+				<option value="CHI">CHI</option>
+				<option value="CLE">CLE</option>
+				<option value="DAL">DAL</option>
+				<option value="DEN">DEN</option>
+				<option value="DET">DET</option>
+				<option value="GSW">GSW</option>
+				<option value="HOU">HOU</option>
+				<option value="IND">IND</option>
+				<option value="LAC">LAC</option>
+				<option value="LAL">LAL</option>
+				<option value="MEM">MEM</option>
+				<option value="MIA">MIA</option>
+				<option value="MIL">MIL</option>
+				<option value="MIN">MIN</option>
+				<option value="NOP">NOP</option>
+				<option value="NYK">NYK</option>
+				<option value="OKC">OKC</option>
+				<option value="ORL">ORL</option>
+				<option value="PHI">PHI</option>
+				<option value="PHX">PHX</option>
+				<option value="POR">POR</option>
+				<option value="SAC">SAC</option>
+				<option value="SAS">SAS</option>
+				<option value="TOR">TOR</option>
+				<option value="UTA">UTA</option>
+				<option value="WAS">WAS</option>
+			</select>
+			<br>
 			<br>
 			Min. Minutes Played: 
-			<input type="text" id="min_mp" class="textInput" value="100">
+			<input type="text" id="min_mp" class="textInput" value="200">
 			<br>
 			<br>
 			K-Means Clusters: 
@@ -347,6 +453,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 			<br>
 			<button type="submit" name="button" >Submit</button>
 
+
 		</form>
 		</br>
 		</br>
@@ -360,6 +467,63 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		<div class="output" id="output"></div>
 		<div class="plot" id="plot"></div>
 	</div>
+
+	<!-- Sidebar Glossary -->
+	<div id="glossarySidebar" class="sidebar">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeGlossary()">×</a>
+		<h2>Glossary</h2>
+		<p><strong>GP (Games Played):</strong> The total number of games a player or team has participated in.</p>
+		<p><strong>W (Wins):</strong> The total number of games won by a player or team.</p>
+		<p><strong>L (Losses):</strong> The total number of games lost by a player or team.</p>
+		<p><strong>W_PCT (Win Percentage):</strong> The percentage of games won out of the total games played.</p>
+		<p><strong>MIN (Minutes):</strong> The total number of minutes played.</p>
+		<p><strong>FGM (Field Goals Made):</strong> The total number of field goals successfully made.</p>
+		<p><strong>FGA (Field Goals Attempted):</strong> The total number of field goal attempts.</p>
+		<p><strong>FG_PCT (Field Goal Percentage):</strong> The percentage of field goals made out of the total attempted.</p>
+		<p><strong>FG3M (Three-Point Field Goals Made):</strong> The total number of three-point shots successfully made.</p>
+		<p><strong>FG3A (Three-Point Field Goals Attempted):</strong> The total number of three-point shot attempts.</p>
+		<p><strong>FG3_PCT (Three-Point Field Goal Percentage):</strong> The percentage of three-point shots made out of the total attempted.</p>
+		<p><strong>FTM (Free Throws Made):</strong> The total number of free throws successfully made.</p>
+		<p><strong>FTA (Free Throws Attempted):</strong> The total number of free throw attempts.</p>
+		<p><strong>FT_PCT (Free Throw Percentage):</strong> The percentage of free throws made out of the total attempted.</p>
+		<p><strong>OREB (Offensive Rebounds):</strong> The total number of rebounds collected on the offensive end of the court.</p>
+		<p><strong>DREB (Defensive Rebounds):</strong> The total number of rebounds collected on the defensive end of the court.</p>
+		<p><strong>REB (Total Rebounds):</strong> The combined total of offensive and defensive rebounds.</p>
+		<p><strong>AST (Assists):</strong> The total number of assists made.</p>
+		<p><strong>TOV (Turnovers):</strong> The total number of times a player or team has lost possession of the ball to the opposing team.</p>
+		<p><strong>STL (Steals):</strong> The total number of times a player or team has taken the ball away from an opponent.</p>
+		<p><strong>BLK (Blocks):</strong> The total number of shots blocked.</p>
+		<p><strong>BLKA (Blocks Against):</strong> The total number of times a player's shot has been blocked by an opponent.</p>
+		<p><strong>PF (Personal Fouls):</strong> The total number of personal fouls committed.</p>
+		<p><strong>PFD (Personal Fouls Drawn):</strong> The total number of personal fouls drawn by a player.</p>
+		<p><strong>PTS (Points):</strong> The total number of points scored.</p>
+		<p><strong>PLUS_MINUS:</strong> The point differential when a player or team is on the court.</p>
+		<p><strong>E_OFF_RATING (Estimated Offensive Rating):</strong> An estimate of points produced (players) or scored (teams) per 100 possessions.</p>
+		<p><strong>OFF_RATING (Offensive Rating):</strong> Points scored per 100 possessions by a team.</p>
+		<p><strong>E_DEF_RATING (Estimated Defensive Rating):</strong> An estimate of points allowed per 100 possessions.</p>
+		<p><strong>DEF_RATING (Defensive Rating):</strong> Points allowed per 100 possessions by a team.</p>
+		<p><strong>E_NET_RATING (Estimated Net Rating):</strong> An estimate of point differential per 100 possessions.</p>
+		<p><strong>NET_RATING (Net Rating):</strong> Point differential per 100 possessions.</p>
+		<p><strong>AST_PCT (Assist Percentage):</strong> An estimate of the percentage of teammate field goals a player assisted while on the floor.</p>
+		<p><strong>AST_TO (Assist to Turnover Ratio):</strong> The ratio of assists to turnovers.</p>
+		<p><strong>AST_RATIO (Assist Ratio):</strong> The number of assists a player averages per 100 possessions used.</p>
+		<p><strong>OREB_PCT (Offensive Rebound Percentage):</strong> An estimate of the percentage of available offensive rebounds a player grabbed while on the floor.</p>
+		<p><strong>DREB_PCT (Defensive Rebound Percentage):</strong> An estimate of the percentage of available defensive rebounds a player grabbed while on the floor.</p>
+		<p><strong>REB_PCT (Total Rebound Percentage):</strong> An estimate of the percentage of available rebounds a player grabbed while on the floor.</p>
+		<p><strong>TM_TOV_PCT (Turnover Percentage):</strong> An estimate of turnovers per 100 plays.</p>
+		<p><strong>EFG_PCT (Effective Field Goal Percentage):</strong> This statistic adjusts for the fact that a 3-point field goal is worth one more point than a 2-point field goal.</p>
+		<p><strong>TS_PCT (True Shooting Percentage):</strong> A measure of shooting efficiency that takes into account field goals, 3-point field goals, and free throws.</p>
+		<p><strong>E_PACE (Estimated Pace):</strong> An estimate of the number of possessions per 48 minutes by a team.</p>
+		<p><strong>PACE:</strong> The number of possessions per 48 minutes by a team.</p>
+		<p><strong>PACE_PER40:</strong> The number of possessions per 40 minutes by a team.</p>
+		<p><strong>POSS (Possessions):</strong> The total number of possessions by a team.</p>
+		<p><strong>PIE (Player Impact Estimate):</strong> A metric that provides an estimate of a player's overall impact on a game.</p>
+		<br>
+		<br>
+	</div>
+
+
+
 </body>
 
 	
@@ -367,298 +531,8 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 
 <!-- 	<script src="static/nbaSubmit.js"></script>	 -->
 <script src="https://cdn.plot.ly/plotly-2.9.0.min.js"></script>
-<script type="text/javascript">
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 
-$(document).ready(function() {
-	$('#form').on('submit',function(e){
-		$.ajax({
-		data : {
-			season : $('#season').val(),
-			statx : $('#statx').val(),
-			staty : $('#staty').val(),
-			statz : $('#statz').val(),
-			groupquantity : $('#groupquantity').val(),
-			min_mp : $('#min_mp').val(),
-			kmclust : $('#kmclust').val(),
-			linreg : $('#linreg:checked').val()
-
-		},
-		type : 'POST',
-		url : '/nbaSubmit'
-		})
-		.done(function(data){
-			//check if there is a statz that can be used
-			// if no, then plot 2d scat chart
-			if (data.z.constructor == String) {
-				console.log(data.color);
-				// if linear regression button is checked, plot line
-				if ($('#linreg:checked').val() == 1){
-					var trace1 = {
-						x: data.x,
-						y: data.y,
-						mode: 'markers',
-						type: 'scatter',
-						text: data.lineups,
-						//marker:{color: '#43FF33'},
-						marker:{color: data.color},
-						name: 'Lineups'
-					};
-
-					var trace2 = {
-						x: data.x,
-						y: data.y_pred,
-						mode: 'lines',
-						marker:{color: data.color},
-						name: 'Linear Regression'
-					};
-					
-					var plotdata = [trace1,trace2];
-					
-					const squared = "2"
-					var rsq_string = "R"+squared.sup()+": "+data.pred_results[0];
-					var int_string = "Intercept: "+data.pred_results[1];
-					var coef_string = "Coefficient: "+data.pred_results[2];
-					
-					const rsq_container = document.getElementById('rsq_container');
-					const int_container = document.getElementById('int_container');
-					const coef1_container = document.getElementById('coef1_container');
-
-					rsq_container.innerHTML = rsq_string;
-					//int_container.innerHTML = int_string;
-					//coef1_container.innerHTML = coef_string;
-
-					
-				} else { // if it is not selected then just plot the scatters
-					var trace1 = {
-					x: data.x,
-					y: data.y,
-					mode: 'markers',
-					type: 'scatter',
-					text: data.lineups,
-					marker:{color: data.color},
-					name: 'Lineups'
-					};
-
-					var plotdata = [trace1];
-					
-					var lr_string = "";
-					const rsq_container = document.getElementById('rsq_container');
-					rsq_container.innerHTML = lr_string;
-				}
-				var gridcolor = 'rgba(255, 255, 255,0.3)'
-				var layout = {
-					height: 600,
-					xaxis: {
-						title:{
-							text: $('#statx').val(),
-							color: 'white',
-							font: {
-								family: 'Courier New',
-								size: 18,
-							}
-						},
-						tickfont: {
-							color: 'white',
-							family: 'Courier New',
-							size: 15
-						},
-						showline: true,
-						linecolor: 'white',
-						gridcolor: gridcolor,
-						linewidth: 1,
-						color: 'white'
-					},
-					yaxis: {
-						title: {
-							text: $('#staty').val(),
-							color: 'white',
-							font: {
-								family: 'Courier New',
-								size: 18,
-							}
-						},
-						tickfont: {
-							color: 'white',
-							family: 'Courier New',
-							size: 15
-						},
-						showline: true,
-						gridcolor: gridcolor,
-						linewidth: 1,
-						color: 'white'
-					},
-
-					automargin: true,
-					plot_bgcolor: 'black',
-					paper_bgcolor: 'black',
-					showlegend: false
-
-					
-				};
-				
-				var config = {responsive: true};
-
-				
-				
-				Plotly.newPlot('plot', plotdata, layout,config);
-				
-			} else {//plot 3d scatter plot
-
-			
-				// if linear regression button is checked, get different traces
-				if ($('#linreg:checked').val() == 1){
-				
-					var trace1 = {
-					  x: data.x,
-					  y: data.y,
-					  z: data.z,
-					  mode: 'markers',
-					  type: 'scatter3d',
-					  text: data.lineups,
-					  marker:{color: data.color,size:5},
-					  name: 'Lineups'
-
-					};
-
-					var trace2 = {
-						x: data.x_pred,
-						y: data.y_pred,
-						z: data.z_pred,
-						type: 'mesh3d',
-						colorscale: 'rgb(255, 0, 255)',
-						opacity: 0.5,
-						name: 'Linear Regression'
-					};
-					
-					
-					var plotdata = [trace1,trace2];
-					
-					const squared = "2"
-					var rsq_string = "R"+squared.sup()+": "+data.pred_results[0];
-					var int_string = "Intercept: "+data.pred_results[1];
-					var coef1_string = "Coefficients: "+data.pred_results[2][0]+",";
-					var coef2_string = data.pred_results[2][1];
-					
-					const rsq_container = document.getElementById('rsq_container');
-					const int_container = document.getElementById('int_container');
-					const coef1_container = document.getElementById('coef1_container');
-					const coef2_container = document.getElementById('coef2_container');
-
-
-					rsq_container.innerHTML = rsq_string;
-					//int_container.innerHTML = int_string;
-					//coef1_container.innerHTML = coef1_string;
-					//coef2_container.innerHTML = coef2_string;
-
-					
-					
-				} else {
-				
-					var trace1 = {
-					  x: data.x,
-					  y: data.y,
-					  z: data.z,
-					  mode: 'markers',
-					  type: 'scatter3d',
-					  text: data.lineups,
-					  marker:{color: data.color,size:5},
-					  name: 'Lineups'
-					};
-
-					
-					var plotdata = [trace1];	
-					
-					var lr_string = "";
-					const rsq_container = document.getElementById('rsq_container');
-					rsq_container.innerHTML = lr_string;
-				}
-				
-				var layout = {
-					height: 800,
-					scene: {
-						xaxis: {
-							title:{
-								text: $('#statx').val(),
-								color: 'white',
-								font: {
-									family: 'Courier New',
-									size: 18,
-								}
-							},
-							tickfont: {
-								color: 'white',
-								family: 'Courier New',
-								size: 15
-							},
-							showline: true,
-							linecolor: 'white',
-							gridcolor: gridcolor,
-							linewidth: 1,
-							color: 'white'
-						},
-						yaxis: {
-							title: {
-								text: $('#staty').val(),
-								color: 'white',
-								font: {
-									family: 'Courier New',
-									size: 18,
-								}
-							},
-							tickfont: {
-								color: 'white',
-								family: 'Courier New',
-								size: 15
-							},
-							showline: true,
-							gridcolor: gridcolor,
-							linewidth: 1,
-							color: 'white'
-						},
-						zaxis: {
-							title: {
-								text: $('#statz').val(),
-								color: 'white',
-								font: {
-									family: 'Courier New',
-									size: 18,
-								}
-							},
-							tickfont: {
-								color: 'white',
-								family: 'Courier New',
-								size: 15
-							},
-							showline: true,
-							gridcolor: gridcolor,
-							linewidth: 1,
-							color: 'white'
-						},
-						showlegend: false
-					},
-					  margin: {
-						l: 10,
-						r: 10,
-						b: 10,
-						t: 10,
-						pad: 4
-					},
-					plot_bgcolor: 'black',
-					paper_bgcolor: 'black',
-				};
-				
-				var config = {responsive: true};
-				
-				Plotly.newPlot('plot', plotdata, layout,config);				
-				
-			
-			}
-		
-		
-		});
-		e.preventDefault();
-	});
-});
 
 </script>
 

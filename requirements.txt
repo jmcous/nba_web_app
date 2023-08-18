@@ -5,4 +5,6 @@ datetime
 numpy
 scikit-learn
 gunicorn
-sklearn
+google-cloud-bigquery
+db-dtypes
+urllib3==1.26.7

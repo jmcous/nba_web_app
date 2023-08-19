@@ -2,30 +2,31 @@ $(document).ready(function() {
 	var fetchedData = null;
 
 	$('#form').on('submit',function(e){
-		$.ajax({
-		data : {
-			season : $('#season').val(),
-			statx : $('#statx').val(),
-			staty : $('#staty').val(),
-			statz : $('#statz').val(),
-			groupquantity : $('#groupquantity').val(),
-			teams : $('#teams').val(),
-			min_mp : $('#min_mp').val(),
-			kmclust : $('#kmclust').val(),
-			linreg : $('#linreg:checked').val()
-
-		},
-		type : 'POST',
-		url : '/nbaSubmit'
-		})
-		.done(function(data){
-			fetchedData = data;
-			plotGraph(data);
-		
-		
-		});
+		fetchData();
 		e.preventDefault();
 	});
+
+	function fetchData() {
+		$.ajax({
+			data: {
+				season : $('#season').val(),
+				statx : $('#statx').val(),
+				staty : $('#staty').val(),
+				statz : $('#statz').val(),
+				groupquantity : $('#groupquantity').val(),
+				teams : $('#teams').val(),
+				min_mp : $('#min_mp').val(),
+				kmclust : $('#kmclust').val(),
+				linreg : $('#linreg:checked').val()
+			},
+			type: 'POST',
+			url: '/nbaSubmit'
+		}).done(function (data) {
+			fetchedData = data;
+			plotGraph(data);
+		});
+	}
+
 
     // Event listener for team dropdown change
     $('#team').on('change', function() {
@@ -34,6 +35,56 @@ $(document).ready(function() {
         }
     });
 
+	// Event listener for kmeans change
+	$('#kmclust').on('change', function () {
+		if (fetchedData) {
+			if ( $('#kmclust').val() > 1) {
+				applyKmeans(fetchedData, $(this).val());
+			} else {
+				fetchedData.color = '#43FF33';
+				plotGraph(fetchedData); // Re-plot the graph with the stored data
+			}
+		}
+	});
+
+	// Event listener for regression checkbox change
+	$('#linreg').on('change', function () {
+		if (fetchedData) {
+			applyLinReg(fetchedData, $(this).val());
+		}
+	});
+
+	// Function to apply kmeans clustering
+	function applyKmeans(data, clusters) {
+		$.ajax({
+			data: {
+				data: JSON.stringify(data),
+				clusters: clusters
+			},
+			type: 'POST',
+			url: '/applyKmeans'
+		}).done(function (data) {
+			plotGraph(data);
+			fetchedData = data;
+		});
+	}
+
+	// Function to apply linear regression
+	function applyLinReg(data, linreg) {
+		$.ajax({
+			data: {
+				data: JSON.stringify(data),
+				linreg: linreg
+			},
+			type: 'POST',
+			url: '/applyLinReg'
+		}).done(function (data) {
+			plotGraph(data);
+			fetchedData = data;
+		});
+	}
+
+	// Function to highlight selected team
 	function plotSelectedTeam(data, traces, axes) {
 		var teamDropDown = document.getElementById("team");
 		var selectedTeam = teamDropDown.value;
@@ -129,6 +180,7 @@ $(document).ready(function() {
 		Plotly.newPlot('plot', traces, layout, config);
 	}
 	
+
 	function plot2DGraph(data) {
 		let traces = [];
 		if ($('#linreg:checked').val() == 1) {
@@ -205,7 +257,6 @@ $(document).ready(function() {
 		const squared = "2";
 		const rsq_container = document.getElementById('rsq_container');
 		rsq_container.innerHTML = "R" + squared.sup() + ": " + data.pred_results[0];
-		// Additional code for other regression results can be added here
 	}
 	
 	function clearRegressionResults() {
@@ -328,7 +379,6 @@ $(document).ready(function() {
 					linewidth: 1,
 					color: 'white'
 				},
-				showlegend: false
 			},
 				margin: {
 				l: 10,
@@ -339,6 +389,7 @@ $(document).ready(function() {
 			},
 			plot_bgcolor: 'black',
 			paper_bgcolor: 'black',
+			showlegend: false
 		};
 	}
 	

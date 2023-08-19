@@ -13,7 +13,8 @@ from nba_api.stats.endpoints import leaguedashlineups
 from nba_api.stats.library.parameters import *
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from sklearn import cluster
+from sklearn.cluster import KMeans
+import numpy as np
 from google.cloud import bigquery
 
 def convert_int64(value):
@@ -110,7 +111,7 @@ def nbaSubmit():
         elif linreg:
 
             y_pred, results = perform_linear_regression(x, y)
-
+            print(results)
             return jsonify({'x' : x, 'y' : y, 
                             'y_pred': y_pred.tolist(), 'pred_results' : results, 'z' : z,
                               'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
@@ -120,11 +121,58 @@ def nbaSubmit():
         return jsonify({'x' : x, 'y' : y, 'z' : z,
                          'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
 
+# Route for applying kmeans clustering without resubmtting the form and sql query
+@app.route('/applyKmeans', methods=['POST'])
+def applyKmeans():
+    data = json.loads(request.form['data'])  # Assuming you're sending data as JSON string
+    clusters = int(request.form['clusters'])
+    
+    x = data['x']
+    y = data['y']
+    z = data.get('z', None)  # Get the z value if available, else set to None
 
 
-from sklearn.cluster import KMeans
-import numpy as np
+    # Perform kmeans clustering
+    if z is not None and z != '':
+        color = perform_kmeans_clustering(x, y, z, n_clusters=clusters)
+    else:
+        color = perform_kmeans_clustering(x, y, n_clusters=clusters)
+    # Add the clustering result to the data and return
+    data['color'] = color.tolist()
 
+    return jsonify(data)
+
+# Route for applying linear regression without resubmtting the form and sql query
+@app.route('/applyLinReg', methods=['POST'])
+def applyLinReg():
+    data = json.loads(request.form['data'])
+    x = data['x']
+    y = data['y']
+    z = data.get('z', None)  # Get the z value if available, else set to None
+
+    # Perform linear regression
+    if z is not None and z != '':
+        xx_pred, yy_pred, predicted, results = perform_linear_regression(x, y, z)
+
+        # Add the regression result to the data and return
+        data['x_pred'] = xx_pred.flatten().tolist()
+        data['y_pred'] = yy_pred.flatten().tolist()
+        data['z_pred'] = predicted.tolist()
+        data['pred_results'] = results
+
+
+    else:
+
+        y_pred, results = perform_linear_regression(x, y)
+
+        # Add the regression result to the data and return
+        data['y_pred'] = y_pred.tolist()
+        data['pred_results'] = results
+
+    return jsonify(data)
+
+
+# main.py function for kmeans clustering
 def perform_kmeans_clustering(x, y, z=None, n_clusters=2):
     if z is not None:
         data = np.column_stack((np.array(x), np.array(y), np.array(z)))
@@ -134,7 +182,7 @@ def perform_kmeans_clustering(x, y, z=None, n_clusters=2):
     kmeans = KMeans(n_clusters=n_clusters, random_state=42).fit(data)
     return kmeans.labels_
 
-
+# main.py function for linear regression
 def perform_linear_regression(x, y, z=None):
         if z is not None:
             # Convert to numpy arrays/dataframes/reshape

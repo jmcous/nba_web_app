@@ -194,13 +194,98 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		background-color: #575757; /* Slightly lighter on hover */
 	}
 
+	.toolbar {
+		height: 5%; /* Adjust as needed */
+		width: 81%; /* Remaining width after side navigation */
+		position: fixed;
+		z-index: 2; /* Above other content, below sidebar */
+		top: 0;
+		left: 18%; /* Same as the width of the side navigation */
+		background-color: black;
+		color: #43FF33;
+		font-family: "Courier New";
+		border: 2px solid #43FF33;
+		overflow-x: hidden;
+		padding-top: 10px;
+		z-index: 2;
+	}	
+
+	.toolbar a {
+		color: #43FF33;
+		text-decoration: none;
+		padding: 10px 15px;
+		font-size: 16px;
+	}
+
+	.toolbar a:hover {
+		background-color: #575757; /* Slightly lighter on hover */
+	}
+
+	.dropdown {
+		float: left;
+		overflow: hidden;
+	}
+
+	.dropdown .dropbtn {
+		font-size: 16px;
+		border: none;
+		outline: none;
+		color: #43FF33;
+		padding: 10px 15px;
+		background-color: inherit;
+		font-family: "Courier New";
+		margin: 0;
+	}
+
+	.toolbar .dropdown:hover .dropbtn {
+		background-color: #575757; /* Slightly lighter on hover */
+	}
+
+	.dropdown-content {
+		display: none;
+		position: absolute;
+		background-color: black;
+		min-width: 160px;
+		box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+		z-index: 1003; /* Above toolbar */
+	}
+
+	.dropdown-content a {
+		float: none;
+		color: #43FF33;
+		padding: 12px 16px;
+		text-decoration: none;
+		display: block;
+		text-align: left;
+		z-index: 1003; /* Above toolbar */
+	}
+
+	.dropdown-content a:hover {
+		background-color: #575757; /* Slightly lighter on hover */
+	}
+
+	.dropdown:hover .dropdown-content {
+		display: block;
+	}
+
 
 
 
 
 </style>
 <body>
-
+	<div class="toolbar">
+        <a href="#home" class="toolbar-item">Home</a>
+        <div class="toolbar-item dropdown">
+            <a href="#statistics-and-analysis" class="dropbtn">Statistics and Analysis</a>
+            <div class="dropdown-content">
+                <a href="#linear-regression">Linear Regression</a>
+                <a href="#k-means">K-Means Clusters</a>
+            </div>
+        </div>
+        <a href="#about" class="toolbar-item">About</a>
+        <a href="#contact" class="toolbar-item">Contact</a>
+    </div>
 	<div class="sidenav">
 		<h1>NBA Lineup Analyzer</h1>
 		<h5>

@@ -177,7 +177,12 @@ $(document).ready(function() {
 			layout = get3DLayout($('#statx').val(), $('#staty').val(), $('#statz').val(), gridcolor);
 		}
 	
-		Plotly.newPlot('plot', traces, layout, config);
+		Plotly.newPlot('plot', traces, layout, config).then(function() {
+			const plotDiv = document.getElementById('plot');
+			plotDiv.on('plotly_click', function(data) {
+				handlePointClick(data);
+			});
+		});	
 	}
 	
 
@@ -393,7 +398,117 @@ $(document).ready(function() {
 		};
 	}
 	
+	function handlePointClick(data) {
+		const pointData = data.points[0];
+		const xValue = pointData.x;
+		const yValue = pointData.y;
+		const textValue = pointData.text;
+	
+	
+		// Fetch and display the shot chart
+		fetchShotChart(textValue);
+	}
 
+
+	// function fetchShotChart(lineup, xPixel, yPixel) {
+	// 	$.ajax({
+	// 		url: '/getShotChart',
+	// 		type: 'POST',
+	// 		data: { lineup: lineup },
+	// 		success: function(response) {
+	// 			const bubble = document.getElementById('shotChartBubble');
+				
+	// 			// Populate the bubble with the shot chart data
+	// 			bubble.innerHTML = response; // Assuming response is HTML content
+	
+	// 			// Position the bubble
+	// 			bubble.style.left = `${xPixel}px`;
+	// 			bubble.style.top = `${yPixel}px`;
+	
+	// 			// Show the bubble
+	// 			bubble.classList.remove('bubble-hidden');
+	// 		}
+	// 	});
+	// }
+
+	function fetchShotChart(lineup) {
+		// For this example, let's generate some random shot data
+		let shots = [];
+		let shotResults = [];
+		for (let i = 0; i < 50; i++) {
+			shots.push({
+				x: (Math.random() - 0.5) * 25, // Random x between -12.5 and 12.5
+				y: Math.random() * 30, // Random y between 0 and 30
+				result: Math.random() > 0.5 ? 'made' : 'missed' // Randomly decide if shot was made or missed
+			});
+			shotResults.push(shots[i].result);
+		}
+	
+		let madeShots = shots.filter(shot => shot.result === 'made');
+		let missedShots = shots.filter(shot => shot.result === 'missed');
+	
+		let traceMade = {
+			x: madeShots.map(shot => shot.x),
+			y: madeShots.map(shot => shot.y),
+			mode: 'markers',
+			name: 'Made',
+			marker: { color: 'green', size: 10 }
+		};
+	
+		let traceMissed = {
+			x: missedShots.map(shot => shot.x),
+			y: missedShots.map(shot => shot.y),
+			mode: 'markers',
+			name: 'Missed',
+			marker: { color: 'red', size: 10 }
+		};
+		const gridcolor = 'rgba(255, 255, 255,0.3)';
+
+		let layout = {
+			title: {
+				text: 'Shot Chart for ' + lineup,
+				font: {
+					size: 10,
+					color: 'white',
+					family: 'Courier New'
+				}
+			},
+			xaxis: {
+				range: [-12.5, 12.5],
+				tickfont: {
+					color: 'white',
+					family: 'Courier New',
+					size: 8
+				}
+			},
+			yaxis: {
+				range: [0, 30],
+				tickfont: {
+					color: 'white',
+					family: 'Courier New',
+					size: 8
+				},
+				showline: true,
+				gridcolor: gridcolor,
+				linewidth: 1,
+				color: 'white'
+
+			},
+			width: 300,
+			height: 300,
+			plot_bgcolor: 'black',
+			paper_bgcolor: 'black',
+			showlegend: false
+		};
+
+
+
+		Plotly.purge('shotChartContainer');
+		Plotly.react('shotChartContainer', [traceMade, traceMissed], layout);
+
+		// open shotchart sidebar if not already open
+		openSCBar();
+	}
 
 });
 
@@ -403,4 +518,16 @@ function openGlossary() {
 
 function closeGlossary() {
 	document.getElementById("glossarySidebar").style.width = "0";
+}
+
+function openSCBar() {
+    let bar = document.getElementById("shotchartBar");
+    if (bar.style.height === "0px" || bar.style.height === "") {
+        bar.style.height = "300px";
+    }
+}
+
+
+function closeSCBar() {
+	document.getElementById("shotchartBar").style.height = "0";
 }

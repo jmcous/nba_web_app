@@ -8,3 +8,4 @@ data/
 data/*
 *.ipynb*
 skipped_group_ids.txt
+process_shotchart_csvs.py

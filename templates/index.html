@@ -50,7 +50,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 
 	
 	.sidenav {
-	  height: 80%;
+	  height: 800px;
 	  width: 18%;
 	  padding: 0px 10px;
 	  position: fixed;
@@ -194,9 +194,71 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		background-color: #575757; /* Slightly lighter on hover */
 	}
 
+	#shotChartBubble {
+		position: absolute;
+		z-index: 1000;
+		border: 1px solid black;
+		background-color: white;
+		box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+		padding: 1px;
+	}
+	#shotChartContainer {
+		width: 300px; /* Adjust as needed */
+		height: 300px; /* Adjust as needed */
+		margin-right: 10px; /* Space between shot charts */
+	}
 
 
 
+	.bottombar {
+		height: 0;
+		width: 100%; /* Full width */
+		position: fixed;
+		z-index: 2; /* Ensure it's above other content */
+		bottom: 0;
+		left: 0;
+		background-color: #1E1E1E; /* Dark background to match your site */
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 20px;
+		font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+	}
+
+	/* Bottom bar content */
+	.bottombar p {
+		padding: 10px 15px;
+		text-align: left;
+		font-size: 16px; /* Adjusted for better fit */
+		color: white;
+		width: 250px;
+	}
+
+	/* Glossary title */
+	.bottombar h2 {
+		color: white;
+		font-size: 24px;
+		padding-left: 15px;
+	}
+
+	/* Close button */
+	.bottombar .closebtn {
+		position: absolute;
+		top: 10px;
+		right: 25px;
+		font-size: 36px;
+		color: white; /* Match text color */
+		text-decoration: none; /* Remove any default styling */
+	}
+
+	.shotcharts {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: row;
+		overflow-x: auto; /* Enable horizontal scrolling if there are many shot charts */
+	}
 
 </style>
 <body>
@@ -495,6 +557,18 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		<div class="plot" id="plot"></div>
 	</div>
 
+	<!-- <div id="shotChartBubble" style="display:none;">
+		<span id="closeBubble" style="cursor:pointer; position:absolute; right:5px; top:2px;">&times;</span>
+		<div id="shotChartContainer"></div>
+	</div> -->
+
+	<!-- Shotchart Sidebar -->
+	<div id="shotchartBar" class="bottombar">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeSCBar()">×</a>
+		<h2>Shotchart</h2>
+		<div id="shotChartContainer"></div>
+	</div>
+
 	<!-- Sidebar Glossary -->
 	<div id="glossarySidebar" class="sidebar">
 		<a href="javascript:void(0)" class="closebtn" onclick="closeGlossary()">×</a>
@@ -549,7 +623,9 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE.
 		<br>
 	</div>
 
-
+	<div id="testbttn">
+		<button type="button" onclick="openSCBar()">Open Shotchart</button>
+	</div>
 
 </body>
 

@@ -161,7 +161,7 @@ $(document).ready(function() {
 		}
 
 		return plotdata;
-	  }
+	}
 	  
 	function plotGraph(data) {
 		let traces = [];

@@ -432,82 +432,88 @@ $(document).ready(function() {
 	// }
 
 	function fetchShotChart(lineup) {
-		// For this example, let's generate some random shot data
-		let shots = [];
-		let shotResults = [];
-		for (let i = 0; i < 50; i++) {
-			shots.push({
-				x: (Math.random() - 0.5) * 25, // Random x between -12.5 and 12.5
-				y: Math.random() * 30, // Random y between 0 and 30
-				result: Math.random() > 0.5 ? 'made' : 'missed' // Randomly decide if shot was made or missed
-			});
-			shotResults.push(shots[i].result);
-		}
+		fetch('/getShotChart', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body: `season=${encodeURIComponent('your_season')}&groupquantity=${encodeURIComponent('your_group_quantity')}`
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			const x = data.x;
+			const y = data.y;
+			const shot_made = data.shot_made;
+			const group_ids = data.group_ids;
 	
-		let madeShots = shots.filter(shot => shot.result === 'made');
-		let missedShots = shots.filter(shot => shot.result === 'missed');
-	
-		let traceMade = {
-			x: madeShots.map(shot => shot.x),
-			y: madeShots.map(shot => shot.y),
-			mode: 'markers',
-			name: 'Made',
-			marker: { color: 'green', size: 10 }
-		};
-	
-		let traceMissed = {
-			x: missedShots.map(shot => shot.x),
-			y: missedShots.map(shot => shot.y),
-			mode: 'markers',
-			name: 'Missed',
-			marker: { color: 'red', size: 10 }
-		};
-		const gridcolor = 'rgba(255, 255, 255,0.3)';
+			let traceMade = {
+				x: madeShots.map(shot => shot.x),
+				y: madeShots.map(shot => shot.y),
+				mode: 'markers',
+				name: 'Made',
+				marker: { color: 'green', size: 10 }
+			};
+		
+			let traceMissed = {
+				x: missedShots.map(shot => shot.x),
+				y: missedShots.map(shot => shot.y),
+				mode: 'markers',
+				name: 'Missed',
+				marker: { color: 'red', size: 10 }
+			};
+			const gridcolor = 'rgba(255, 255, 255,0.3)';
 
-		let layout = {
-			title: {
-				text: 'Shot Chart for ' + lineup,
-				font: {
-					size: 10,
-					color: 'white',
-					family: 'Courier New'
-				}
-			},
-			xaxis: {
-				range: [-12.5, 12.5],
-				tickfont: {
-					color: 'white',
-					family: 'Courier New',
-					size: 8
-				}
-			},
-			yaxis: {
-				range: [0, 30],
-				tickfont: {
-					color: 'white',
-					family: 'Courier New',
-					size: 8
+			let layout = {
+				title: {
+					text: 'Shot Chart for ' + lineup,
+					font: {
+						size: 10,
+						color: 'white',
+						family: 'Courier New'
+					}
 				},
-				showline: true,
-				gridcolor: gridcolor,
-				linewidth: 1,
-				color: 'white'
+				xaxis: {
+					range: [-12.5, 12.5],
+					tickfont: {
+						color: 'white',
+						family: 'Courier New',
+						size: 8
+					}
+				},
+				yaxis: {
+					range: [0, 30],
+					tickfont: {
+						color: 'white',
+						family: 'Courier New',
+						size: 8
+					},
+					showline: true,
+					gridcolor: gridcolor,
+					linewidth: 1,
+					color: 'white'
 
-			},
-			width: 300,
-			height: 300,
-			plot_bgcolor: 'black',
-			paper_bgcolor: 'black',
-			showlegend: false
-		};
+				},
+				width: 300,
+				height: 300,
+				plot_bgcolor: 'black',
+				paper_bgcolor: 'black',
+				showlegend: false
+			};
 
 
 
-		Plotly.purge('shotChartContainer');
-		Plotly.react('shotChartContainer', [traceMade, traceMissed], layout);
+			Plotly.purge('shotChartContainer');
+			Plotly.react('shotChartContainer', [traceMade, traceMissed], layout);
 
-		// open shotchart sidebar if not already open
-		openSCBar();
+			// open shotchart sidebar if not already open
+			openSCBar();
+	
+	
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
 	}
 
 });

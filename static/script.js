@@ -1,5 +1,10 @@
+var loadingInterval;
+
 $(document).ready(function() {
 	var fetchedData = null;
+	var shotChartData = null;
+	var isShotChartLoaded = false;
+	var lastClickedLineup = null;
 
 	$('#form').on('submit',function(e){
 		fetchData();
@@ -24,6 +29,8 @@ $(document).ready(function() {
 		}).done(function (data) {
 			fetchedData = data;
 			plotGraph(data);
+			isShotChartLoaded = false;
+			fetchShotChartData(); // fetch data for shot charts and store in global variable
 		});
 	}
 
@@ -410,110 +417,139 @@ $(document).ready(function() {
 	}
 
 
-	// function fetchShotChart(lineup, xPixel, yPixel) {
-	// 	$.ajax({
-	// 		url: '/getShotChart',
-	// 		type: 'POST',
-	// 		data: { lineup: lineup },
-	// 		success: function(response) {
-	// 			const bubble = document.getElementById('shotChartBubble');
-				
-	// 			// Populate the bubble with the shot chart data
-	// 			bubble.innerHTML = response; // Assuming response is HTML content
-	
-	// 			// Position the bubble
-	// 			bubble.style.left = `${xPixel}px`;
-	// 			bubble.style.top = `${yPixel}px`;
-	
-	// 			// Show the bubble
-	// 			bubble.classList.remove('bubble-hidden');
-	// 		}
-	// 	});
-	// }
-
-	function fetchShotChart(lineup) {
-		fetch('/getShotChart', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
+	function fetchShotChartData(){
+		//fetch shotChartData:
+		$.ajax({
+			data: {
+				season : $('#season').val(),
+				groupquantity : $('#groupquantity').val()
 			},
-			body: `season=${encodeURIComponent('your_season')}&groupquantity=${encodeURIComponent('your_group_quantity')}`
+			type: 'POST',
+			url: '/getShotChart'
 		})
-		.then(response => response.json())
-		.then(data => {
-			console.log(data);
-			const x = data.x;
-			const y = data.y;
-			const shot_made = data.shot_made;
-			const group_ids = data.group_ids;
-	
-			let traceMade = {
-				x: madeShots.map(shot => shot.x),
-				y: madeShots.map(shot => shot.y),
-				mode: 'markers',
-				name: 'Made',
-				marker: { color: 'green', size: 10 }
-			};
-		
-			let traceMissed = {
-				x: missedShots.map(shot => shot.x),
-				y: missedShots.map(shot => shot.y),
-				mode: 'markers',
-				name: 'Missed',
-				marker: { color: 'red', size: 10 }
-			};
-			const gridcolor = 'rgba(255, 255, 255,0.3)';
+		.done(function(data) {
+			shotChartData = data;
+			isShotChartLoaded = true;
+			console.log(shotChartData);
 
-			let layout = {
-				title: {
-					text: 'Shot Chart for ' + lineup,
-					font: {
-						size: 10,
-						color: 'white',
-						family: 'Courier New'
-					}
-				},
-				xaxis: {
-					range: [-12.5, 12.5],
-					tickfont: {
-						color: 'white',
-						family: 'Courier New',
-						size: 8
-					}
-				},
-				yaxis: {
-					range: [0, 30],
-					tickfont: {
-						color: 'white',
-						family: 'Courier New',
-						size: 8
-					},
-					showline: true,
-					gridcolor: gridcolor,
-					linewidth: 1,
-					color: 'white'
-
-				},
-				width: 300,
-				height: 300,
-				plot_bgcolor: 'black',
-				paper_bgcolor: 'black',
-				showlegend: false
-			};
+			//Stop loading animation
+			stopLoadingAnimation();
+			
+			//Auto-update shot chart if lineup is clicked
+			if (lastClickedLineup != null){
+				fetchShotChart(lastClickedLineup);
+			}
+	});
 
 
-
-			Plotly.purge('shotChartContainer');
-			Plotly.react('shotChartContainer', [traceMade, traceMissed], layout);
-
-			// open shotchart sidebar if not already open
+	}
+	function fetchShotChart(lineup) {
+		lastClickedLineup = lineup;
+		if (!isShotChartLoaded){
 			openSCBar();
-	
-	
-		})
-		.catch((error) => {
-			console.error('Error:', error);
+			startLoadingAnimation();
+			return
+		}
+		document.getElementById("shotChartContainer").innerHTML = "";
+
+		const x_made = [], y_made = [], x_miss = [], y_miss = [];
+
+		const groupData = shotChartData.all_shots.find(group => group.group_name == lineup);
+
+		groupData.shots.forEach(shot => {
+			if (shot.shot_made_flag === 1) {
+				x_made.push(shot.loc_x);
+				y_made.push(shot.loc_y);
+			} else {
+				x_miss.push(shot.loc_x);
+				y_miss.push(shot.loc_y);
+			}
 		});
+
+		let traceMade = {
+			x: x_made,
+			y: y_made,
+			mode: 'markers',
+			name: 'Made',
+			marker:	{ symbol: 'circle',
+					color: 'green',
+					size: 10 }
+		};
+
+		let traceMissed = {
+			x: x_miss,
+			y: y_miss,
+			mode: 'markers',
+			name: 'Missed',
+			marker:	{ symbol: 'x',
+					color: 'red',
+					size: 10 }
+		};
+
+
+
+
+		// let traceMade = {
+		// 	x: madeShots.map(shot => shot.x),
+		// 	y: madeShots.map(shot => shot.y),
+		// 	mode: 'markers',
+		// 	name: 'Made',
+		// 	marker: { color: 'green', size: 10 }
+		// };
+	
+		// let traceMissed = {
+		// 	x: missedShots.map(shot => shot.x),
+		// 	y: missedShots.map(shot => shot.y),
+		// 	mode: 'markers',
+		// 	name: 'Missed',
+		// 	marker: { color: 'red', size: 10 }
+		// };
+
+		let layout = {
+			title: {
+				text: 'Shot Chart for ' + lineup,
+				font: {
+					size: 10,
+					color: 'white',
+					family: 'Courier New'
+				}
+			},
+			xaxis: {
+				range: [-250, 250],
+				tickfont: {
+					color: 'white',
+					family: 'Courier New',
+					size: 8
+				}
+			},
+			yaxis: {
+				range: [0, 470],
+				tickfont: {
+					color: 'white',
+					family: 'Courier New',
+					size: 8
+				},
+				showline: true,
+				linewidth: 1,
+				color: 'white'
+
+			},
+			width: 600,
+			height: 450,
+			plot_bgcolor: '#1E1E1E',
+			paper_bgcolor: '#1E1E1E',
+			showlegend: false,
+			showgrid: false
+		};
+
+
+
+		Plotly.purge('shotChartContainer');
+		Plotly.react('shotChartContainer', [traceMade, traceMissed], layout);
+
+		// open shotchart sidebar if not already open
+		openSCBar();
+
 	}
 
 });
@@ -536,4 +572,23 @@ function openSCBar() {
 
 function closeSCBar() {
 	document.getElementById("shotchartBar").style.height = "0";
+}
+
+function startLoadingAnimation() {
+	let loadingMessage = "Loading data";
+	let dots = "";
+	
+	// Clear any existing interval
+	clearInterval(loadingInterval);
+	
+	// Start a new interval
+	loadingInterval = setInterval(() => {
+	  dots = dots.length < 3 ? dots + "." : "";
+	  document.getElementById('shotChartContainer').innerHTML = loadingMessage + dots;
+	}, 300); // Update every 300 milliseconds
+}
+
+function stopLoadingAnimation() {
+	clearInterval(loadingInterval);
+	document.getElementById("shotChartContainer").innerHTML = "";
 }

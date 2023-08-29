@@ -130,7 +130,7 @@ def getShotChart():
         group_quantity = 5
         client = bigquery.Client()
         query = f"""
-            SELECT group_id, shots
+            SELECT group_id, group_name, shots
             FROM `nba5man.lineup_data.lineup_shots`
             WHERE season = '{season}' AND 
             lineup_size = {group_quantity}
@@ -143,6 +143,7 @@ def getShotChart():
 
         for index,row in result.iterrows():
             group_id = row['group_id']
+            group_name = row['group_name']
             shots = row['shots']
 
 
@@ -152,6 +153,7 @@ def getShotChart():
 
             all_shots.append({
                 'group_id' : group_id,
+                'group_name' : group_name,
                 'shots' : shots
             })
 

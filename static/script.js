@@ -451,7 +451,7 @@ $(document).ready(function() {
 			return
 		}
 		document.getElementById("shotChartContainer").innerHTML = "";
-
+		const season = document.getElementById("season").value;
 		const x_made = [], y_made = [], x_miss = [], y_miss = [];
 
 		const groupData = shotChartData.all_shots.find(group => group.group_name == lineup);
@@ -473,7 +473,8 @@ $(document).ready(function() {
 			name: 'Made',
 			marker:	{ symbol: 'circle',
 					color: 'green',
-					size: 10 }
+					size: 9,
+					alpha: 1.0 }
 		};
 
 		let traceMissed = {
@@ -483,33 +484,15 @@ $(document).ready(function() {
 			name: 'Missed',
 			marker:	{ symbol: 'x',
 					color: 'red',
-					size: 10 }
+					size: 9,
+					alpha: .7 }
 		};
-
-
-
-
-		// let traceMade = {
-		// 	x: madeShots.map(shot => shot.x),
-		// 	y: madeShots.map(shot => shot.y),
-		// 	mode: 'markers',
-		// 	name: 'Made',
-		// 	marker: { color: 'green', size: 10 }
-		// };
-	
-		// let traceMissed = {
-		// 	x: missedShots.map(shot => shot.x),
-		// 	y: missedShots.map(shot => shot.y),
-		// 	mode: 'markers',
-		// 	name: 'Missed',
-		// 	marker: { color: 'red', size: 10 }
-		// };
 
 		let layout = {
 			title: {
-				text: 'Shot Chart for ' + lineup,
+				text: season +': '+ lineup,
 				font: {
-					size: 10,
+					size: 11,
 					color: 'white',
 					family: 'Courier New'
 				}
@@ -535,7 +518,7 @@ $(document).ready(function() {
 
 			},
 			width: 600,
-			height: 450,
+			height: 350,
 			plot_bgcolor: '#1E1E1E',
 			paper_bgcolor: '#1E1E1E',
 			showlegend: false,
@@ -545,7 +528,7 @@ $(document).ready(function() {
 
 
 		Plotly.purge('shotChartContainer');
-		Plotly.react('shotChartContainer', [traceMade, traceMissed], layout);
+		Plotly.react('shotChartContainer', [traceMissed, traceMade], layout);
 
 		// open shotchart sidebar if not already open
 		openSCBar();

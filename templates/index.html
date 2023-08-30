@@ -194,7 +194,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE. -->
 		background-color: #575757; /* Slightly lighter on hover */
 	}
 
-	#shotChartBubble {
+	/* #shotChartBubble {
 		position: absolute;
 		z-index: 1000;
 		border: 1px solid black;
@@ -202,11 +202,11 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE. -->
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 		padding: 1px;
 	}
-	#shotChartContainer {
-		width: 300px; /* Adjust as needed */
-		height: 300px; /* Adjust as needed */
-		margin-right: 10px; /* Space between shot charts */
-	}
+	/* #shotChartContainer {
+		width: 300px; 
+		height: 300px; 
+		margin-right: 10px; 
+	} */ 
 
 
 
@@ -237,8 +237,12 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE. -->
 	}
 	
 	#shotChartContainer {
-  		color: white;
+		color: white;
+		margin-top: 20px;  /* Add top margin */
+		margin-left: 20px; /* Add left margin */
+		align-self: center;
 	}
+
 	
 	/* Glossary title */
 	.bottombar h2 {
@@ -261,7 +265,8 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE. -->
 		flex-grow: 1;
 		display: flex;
 		flex-direction: row;
-		overflow-x: auto; /* Enable horizontal scrolling if there are many shot charts */
+		overflow-x: auto;
+		align-items: center;
 	}
 
 </style>
@@ -295,9 +300,9 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE. -->
 			<br>
 			Group Size: 
 			<select name="groupquantity" id="groupquantity">
-				<option value="3" selected="selected">3</option>
+				<option value="3">3</option>
 				<option value="4">4</option>
-				<option value="5">5</option>
+				<option value="5" selected="selected">5</option>
 			</select>
 			<br>
 			<br>
@@ -569,7 +574,7 @@ APP NOT INTENDED FOR COMMERCIAL OR BUSINESS USE. -->
 	<!-- Shotchart Bottombar -->
 	<div id="shotchartBar" class="bottombar">
 		<a href="javascript:void(0)" class="closebtn" onclick="closeSCBar()">×</a>
-		<h2>Shotchart</h2>
+		<h2>Shot Chart</h2>
 		<div id="shotChartContainer"></div>
 	</div>
 

@@ -450,11 +450,17 @@ $(document).ready(function() {
 			startLoadingAnimation();
 			return
 		}
-		document.getElementById("shotChartContainer").innerHTML = "";
+		document.getElementById("targetShotChart").innerHTML = "";
 		const season = document.getElementById("season").value;
 		const x_made = [], y_made = [], x_miss = [], y_miss = [];
 
 		const groupData = shotChartData.all_shots.find(group => group.group_name == lineup);
+
+		const target = groupData.shots;
+		const k = 5;
+		const similarShotCharts = findKNearestShotCharts(target, shotChartData, k+1);
+		console.log(similarShotCharts);
+
 
 		groupData.shots.forEach(shot => {
 			if (shot.shot_made_flag === 1) {
@@ -525,15 +531,135 @@ $(document).ready(function() {
 			showgrid: false
 		};
 
+		const targetShotChartContainer = document.getElementById('targetShotChart');
+		targetShotChartContainer.innerHTML = '';
+		Plotly.purge('targetShotChart');
+		targetShotChartContainer.classList.add('individual-shotchart-target');
+		Plotly.react('targetShotChart', [traceMissed, traceMade], layout);
+		// Clear previous similar shot charts
+		const similarShotChartsContainer = document.getElementById('similarShotCharts');
+		similarShotChartsContainer.innerHTML = '';
 
+		// Plot each similar shot chart
+		similarShotCharts.forEach((chart, index) => {
+			const chartDiv = document.createElement('div');
+			chartDiv.id = `similarShotChart-${index}`;
+			chartDiv.classList.add('individual-shotchart');
+			similarShotChartsContainer.appendChild(chartDiv);
 
-		Plotly.purge('shotChartContainer');
-		Plotly.react('shotChartContainer', [traceMissed, traceMade], layout);
+			const formattedTitle = formatTitle(season, chart.group_name);
 
-		// open shotchart sidebar if not already open
+			const x_made_similar = [], y_made_similar = [], x_miss_similar = [], y_miss_similar = [];
+
+			chart.shots.forEach(shot => {
+				if (shot.shot_made_flag === 1) {
+					x_made_similar.push(shot.loc_x);
+					y_made_similar.push(shot.loc_y);
+				} else {
+					x_miss_similar.push(shot.loc_x);
+					y_miss_similar.push(shot.loc_y);
+				}
+			});
+
+			const traceMadeSimilar = {
+				x: x_made_similar,
+				y: y_made_similar,
+				mode: 'markers',
+				name: 'Made',
+				marker: { symbol: 'circle', color: 'green', size: 9, alpha: 1.0 }
+			};
+
+			const traceMissedSimilar = {
+				x: x_miss_similar,
+				y: y_miss_similar,
+				mode: 'markers',
+				name: 'Missed',
+				marker: { symbol: 'x', color: 'red', size: 9, alpha: .7 }
+			};
+
+			let simlayout = {
+				title: {
+					text: formattedTitle,
+					font: {
+						size: 11,
+						color: 'white',
+						family: 'Courier New'
+					}
+				},
+				xaxis: {
+					range: [-250, 250],
+					tickfont: {
+						color: 'white',
+						family: 'Courier New',
+						size: 8
+					}
+				},
+				yaxis: {
+					range: [0, 470],
+					tickfont: {
+						color: 'white',
+						family: 'Courier New',
+						size: 8
+					},
+					showline: true,
+					linewidth: 1,
+					color: 'white'
+	
+				},
+				width: 400,
+				height: 250,
+				plot_bgcolor: '#1E1E1E',
+				paper_bgcolor: '#1E1E1E',
+				showlegend: false,
+				showgrid: false
+			};
+			Plotly.react(`similarShotChart-${index}`, [traceMissedSimilar, traceMadeSimilar], simlayout);
+		});
+
+		// Open shotchart sidebar if not already open
 		openSCBar();
-
 	}
+	
+
+
+	function calculateDistance(shot1, shot2) {
+		const dx = shot1.loc_x - shot2.loc_x;
+		const dy = shot1.loc_y - shot2.loc_y;
+		const flagDifference = shot1.shot_made_flag !== shot2.shot_made_flag ? 50 : 0; // Penalty for different shot_made_flag
+		return Math.sqrt(dx * dx + dy * dy) + flagDifference;
+	}
+
+	function calculateTotalDistance(targetShots, chartShots) {
+		let distance = 0;
+		const maxLength = Math.max(targetShots.length, chartShots.length);
+		const penaltyPerExtraShot = 100; // Arbitrary value, adjust as needed
+	
+		for (let i = 0; i < maxLength; i++) {
+			if (i < targetShots.length && i < chartShots.length) {
+				// Both shot charts have a shot at this index
+				distance += calculateDistance(targetShots[i], chartShots[i]);
+			} else {
+				// One of the shot charts doesn't have a shot at this index
+				distance += penaltyPerExtraShot;
+			}
+		}
+	
+		return distance;
+	}
+	
+	// Modified KNN function
+	function findKNearestShotCharts(targetShotChart, shotChartData, k) {
+		const distances = shotChartData.all_shots.map(chart => {
+			return { chart, distance: calculateTotalDistance(targetShotChart, chart.shots) };
+		});
+	
+		// Sort by distance
+		distances.sort((a, b) => a.distance - b.distance);
+	
+		// Return top k shot charts
+		return distances.slice(1, k).map(d => d.chart);
+	}
+
 
 });
 
@@ -548,7 +674,7 @@ function closeGlossary() {
 function openSCBar() {
     let bar = document.getElementById("shotchartBar");
     if (bar.style.height === "0px" || bar.style.height === "") {
-        bar.style.height = "300px";
+        bar.style.height = "361px";
     }
 }
 
@@ -567,11 +693,32 @@ function startLoadingAnimation() {
 	// Start a new interval
 	loadingInterval = setInterval(() => {
 	  dots = dots.length < 3 ? dots + "." : "";
-	  document.getElementById('shotChartContainer').innerHTML = loadingMessage + dots;
+	  document.getElementById('targetShotChart').innerHTML = loadingMessage + dots;
 	}, 300); // Update every 300 milliseconds
 }
 
 function stopLoadingAnimation() {
 	clearInterval(loadingInterval);
-	document.getElementById("shotChartContainer").innerHTML = "";
+	document.getElementById("targetShotChart").innerHTML = "";
+}
+
+function formatTitle(season, groupName) {
+    const maxLength = 50; // Adjust this value based on your needs
+    let title = season + ': ' + groupName;
+
+    if (title.length > maxLength) {
+        // Split the group name by dashes
+        const parts = groupName.split(' - ');
+
+        // Find the middle index to split the title
+        const middleIndex = Math.floor(parts.length / 2);
+
+        // Construct the new group name with a line break
+        const newGroupName = parts.slice(0, middleIndex).join(' - ') + '<br>' + parts.slice(middleIndex).join(' - ');
+
+        // Update the title
+        title = season + ': ' + newGroupName;
+    }
+
+    return title;
 }

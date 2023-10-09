@@ -1,0 +1,302 @@
+.html {
+    height: 100%;
+}
+
+.main {
+  margin-left: 19%; 
+  padding: 0px 10px;
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+  align: center;
+}
+
+.main plot{
+    background-color: black;
+    height: 800px;
+    align: center;
+    border: 2px solid #43FF33;
+}
+
+.plot{
+    background-color: black;
+    height: 800px;
+    align: center;
+    border: 2px solid #43FF33;
+}
+
+.main output{
+    background-color: black;
+    height: 800px
+}
+
+body {
+  background-color: black !important;
+}
+
+
+.sidenav {
+  height: 800px;
+  width: 18%;
+  padding: 0px 10px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+  padding-left: 10px;
+  border: 2px solid #43FF33;
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+}
+
+.sidenav a{
+    color: #43FF33;
+
+
+}
+.sidenav h1 {
+  color: #43FF33;
+  font-family: "Courier New";
+}
+.sidenav description{
+    font-size: 50px;
+}
+.sidenav h2 {
+  color: #43FF33;
+  font-family: "Courier New";
+}
+.sidenav select {
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+    width: 150px;
+
+}
+
+.sidenav input {
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+  width: 150px;
+}
+
+.sidenav button {
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+  border: 1px solid #43FF33;
+}
+
+.sidenav checkbox {
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+  width: 10px;
+}
+
+
+.sidenav input.textInput{
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+  width: 50px;
+}
+
+
+.sidenav input.linregCheckbox{
+  background-color: black;
+  color: #43FF33;
+  font-family: "Courier New";
+  width: 10px;
+}
+
+.sidenav #lr_container{
+    position: absolute;
+    bottom:10%;
+    left:2%;
+}
+.sidenav #lr_description{
+    position: absolute;
+    bottom: 15%;
+    left: 2%;
+}
+
+/* The sidebar */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 2; /* Ensure it's above other content */
+    top: 0;
+    right: 0;
+    background-color: #1E1E1E; /* Dark background to match your site */
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+}
+
+/* Sidebar content */
+.sidebar p {
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 16px; /* Adjusted for better fit */
+    color: white;
+}
+
+/* Glossary title */
+.sidebar h2 {
+    color: white;
+    font-size: 24px;
+    padding-left: 15px;
+}
+
+/* Close button */
+.sidebar .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+    color: white; /* Match text color */
+    text-decoration: none; /* Remove any default styling */
+}
+
+/* Button styling */
+button {
+    padding: 5px 10px;
+    font-size: 14px; /* Adjusted for better fit */
+    background-color: #1E1E1E; /* Dark background to match your site */
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+}
+
+button:hover {
+    background-color: #575757; /* Slightly lighter on hover */
+}
+
+/* #shotChartBubble {
+    position: absolute;
+    z-index: 1000;
+    border: 1px solid black;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    padding: 1px;
+}
+/* #shotChartContainer {
+    width: 300px; 
+    height: 300px; 
+    margin-right: 10px; 
+} */ 
+
+
+
+.bottombar {
+    height: 0px;
+    width: 100%; /* Full width */
+    position: fixed;
+    z-index: 2; /* Ensure it's above other content */
+    bottom: 0;
+    left: 0;
+    background-color: #1E1E1E; /* Dark background to match your site */
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 10px;
+    font-family: 'Courier New', Courier, monospace; /* Match your site's font */
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+/* Bottom bar content */
+.bottombar p {
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 16px; /* Adjusted for better fit */
+    color: white;
+    /* width: 250px; */
+}
+
+.similar-section {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: flex-start; /* Align children to the start (left) */
+    width: 65%; /* Take full width of the parent */
+    overflow-x: auto;
+}
+
+.target-section {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: flex-start; /* Align children to the start (left) */
+    width: 35%; /* Take full width of the parent */
+    overflow-x: auto;
+}
+
+#targetShotChart {
+    color: white;
+    /* margin-top: 5px;  Add top margin */
+    margin-left: 5px; /* Add left margin */
+    align-self: left;
+}
+
+/* Scrollable section for similar shot charts */
+.shotcharts-wrapper {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 10px; /* Spacing between individual shot charts */
+    flex-grow: 1; /* Allows this section to take up remaining space */
+    width: 100%; /* Take full width of the parent */
+    height: 300px; /* Height of the section */
+    overflow-y: hidden; /* Hide vertical scrollbar */
+}
+
+/* Styles for individual shot charts */
+.individual-shotchart {
+    width: 410px;
+    height: 260px;
+    border: 1px solid white;
+    flex-shrink: 0; /* Prevents the individual shot charts from shrinking */
+}
+.individual-shotchart-target {
+    width: 610px;
+    height: 360px;
+    border: 1px solid white;
+    flex-shrink: 0; /* Prevents the individual shot charts from shrinking */
+}	
+
+/* Glossary title */
+.bottombar h2 {
+    color: white;
+    font-size: 24px;
+    padding-left: 15px;
+}
+
+.bottombar h3 {
+    color: white;
+    font-size: 20px;
+    padding-left: 15px;
+}
+
+/* Close button */
+.bottombar .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+    color: white; /* Match text color */
+    text-decoration: none; /* Remove any default styling */
+}
+
+.shotcharts {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    align-items: center;
+}

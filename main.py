@@ -121,6 +121,44 @@ def nbaSubmit():
         return jsonify({'x' : x, 'y' : y, 'z' : z,
                          'lineups' : lineups, 'teams': teams, 'color' : color.tolist()})
 
+@app.route('/getShotChart', methods=['POST'])
+def getShotChart():
+    if request.method == "POST":
+        # season = str(request.form['season'])
+        # group_quantity = float(request.form['groupquantity']);
+        season = '2022-23'
+        group_quantity = 5
+        client = bigquery.Client()
+        query = f"""
+            SELECT group_id, group_name, shots
+            FROM `nba5man.lineup_data.lineup_shots`
+            WHERE season = '{season}' AND 
+            lineup_size = {group_quantity}
+        """
+        query_job = client.query(query)
+        result = query_job.to_dataframe()
+
+        all_shots = []
+
+
+        for index,row in result.iterrows():
+            group_id = row['group_id']
+            group_name = row['group_name']
+            shots = row['shots']
+
+
+            # Convert NumPy types to Python types for JSON serialization
+            if isinstance(shots, np.ndarray):
+                shots = shots.tolist()
+
+            all_shots.append({
+                'group_id' : group_id,
+                'group_name' : group_name,
+                'shots' : shots
+            })
+
+
+        return jsonify({'all_shots' : all_shots})
 # Route for applying kmeans clustering without resubmtting the form and sql query
 @app.route('/applyKmeans', methods=['POST'])
 def applyKmeans():

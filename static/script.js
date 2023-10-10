@@ -1,5 +1,10 @@
+var loadingInterval;
+
 $(document).ready(function() {
 	var fetchedData = null;
+	var shotChartData = null;
+	var isShotChartLoaded = false;
+	var lastClickedLineup = null;
 
 	$('#form').on('submit',function(e){
 		fetchData();
@@ -24,6 +29,8 @@ $(document).ready(function() {
 		}).done(function (data) {
 			fetchedData = data;
 			plotGraph(data);
+			isShotChartLoaded = false;
+			fetchShotChartData(); // fetch data for shot charts and store in global variable
 		});
 	}
 
@@ -161,7 +168,7 @@ $(document).ready(function() {
 		}
 
 		return plotdata;
-	  }
+	}
 	  
 	function plotGraph(data) {
 		let traces = [];
@@ -177,7 +184,12 @@ $(document).ready(function() {
 			layout = get3DLayout($('#statx').val(), $('#staty').val(), $('#statz').val(), gridcolor);
 		}
 	
-		Plotly.newPlot('plot', traces, layout, config);
+		Plotly.newPlot('plot', traces, layout, config).then(function() {
+			const plotDiv = document.getElementById('plot');
+			plotDiv.on('plotly_click', function(data) {
+				handlePointClick(data);
+			});
+		});	
 	}
 	
 
@@ -393,6 +405,334 @@ $(document).ready(function() {
 		};
 	}
 	
+	function handlePointClick(data) {
+		const pointData = data.points[0];
+		const xValue = pointData.x;
+		const yValue = pointData.y;
+		const textValue = pointData.text;
+	
+	
+		// Fetch and display the shot chart
+		fetchShotChart(textValue);
+	}
+
+
+	function fetchShotChartData(){
+		//fetch shotChartData:
+		$.ajax({
+			data: {
+				season : $('#season').val(),
+				groupquantity : $('#groupquantity').val()
+			},
+			type: 'POST',
+			url: '/getShotChart'
+		})
+		.done(function(data) {
+			shotChartData = data;
+			isShotChartLoaded = true;
+			console.log(shotChartData);
+
+			//Stop loading animation
+			stopLoadingAnimation();
+			
+			//Auto-update shot chart if lineup is clicked
+			if (lastClickedLineup != null){
+				fetchShotChart(lastClickedLineup);
+			}
+	});
+
+
+	}
+	function fetchShotChart(lineup) {
+		lastClickedLineup = lineup;
+		if (!isShotChartLoaded){
+			openSCBar();
+			startLoadingAnimation();
+			return
+		}
+		document.getElementById("targetShotChart").innerHTML = "";
+		const season = document.getElementById("season").value;
+		const x_made = [], y_made = [], x_miss = [], y_miss = [];
+
+		const groupData = shotChartData.all_shots.find(group => group.group_name == lineup);
+
+		const target = groupData.shots;
+		const k = 5;
+		const similarShotCharts = findKNearestShotCharts(target, shotChartData, k+1);
+		console.log(similarShotCharts);
+
+
+		groupData.shots.forEach(shot => {
+			if (shot.shot_made_flag === 1) {
+				x_made.push(shot.loc_x);
+				y_made.push(shot.loc_y);
+			} else {
+				x_miss.push(shot.loc_x);
+				y_miss.push(shot.loc_y);
+			}
+		});
+
+		let traceMade = {
+			x: x_made,
+			y: y_made,
+			mode: 'markers',
+			name: 'Made',
+			marker:	{ symbol: 'circle',
+					color: 'green',
+					size: 9,
+					alpha: 1.0 }
+		};
+
+		let traceMissed = {
+			x: x_miss,
+			y: y_miss,
+			mode: 'markers',
+			name: 'Missed',
+			marker:	{ symbol: 'x',
+					color: 'red',
+					size: 9,
+					alpha: .7 }
+		};
+
+		let layout = {
+			title: {
+				text: season +': '+ lineup,
+				font: {
+					size: 11,
+					color: 'white',
+					family: 'Courier New'
+				}
+			},
+			xaxis: {
+				range: [-250, 250],
+				tickfont: {
+					color: 'white',
+					family: 'Courier New',
+					size: 8
+				}
+			},
+			yaxis: {
+				range: [0, 470],
+				tickfont: {
+					color: 'white',
+					family: 'Courier New',
+					size: 8
+				},
+				showline: true,
+				linewidth: 1,
+				color: 'white'
+
+			},
+			width: 600,
+			height: 350,
+			plot_bgcolor: '#1E1E1E',
+			paper_bgcolor: '#1E1E1E',
+			showlegend: false,
+			showgrid: false
+		};
+
+		const targetShotChartContainer = document.getElementById('targetShotChart');
+		targetShotChartContainer.innerHTML = '';
+		Plotly.purge('targetShotChart');
+		targetShotChartContainer.classList.add('individual-shotchart-target');
+		Plotly.react('targetShotChart', [traceMissed, traceMade], layout);
+		// Clear previous similar shot charts
+		const similarShotChartsContainer = document.getElementById('similarShotCharts');
+		similarShotChartsContainer.innerHTML = '';
+
+		// Plot each similar shot chart
+		similarShotCharts.forEach((chart, index) => {
+			const chartDiv = document.createElement('div');
+			chartDiv.id = `similarShotChart-${index}`;
+			chartDiv.classList.add('individual-shotchart');
+			similarShotChartsContainer.appendChild(chartDiv);
+
+			const formattedTitle = formatTitle(season, chart.group_name);
+
+			const x_made_similar = [], y_made_similar = [], x_miss_similar = [], y_miss_similar = [];
+
+			chart.shots.forEach(shot => {
+				if (shot.shot_made_flag === 1) {
+					x_made_similar.push(shot.loc_x);
+					y_made_similar.push(shot.loc_y);
+				} else {
+					x_miss_similar.push(shot.loc_x);
+					y_miss_similar.push(shot.loc_y);
+				}
+			});
+
+			const traceMadeSimilar = {
+				x: x_made_similar,
+				y: y_made_similar,
+				mode: 'markers',
+				name: 'Made',
+				marker: { symbol: 'circle', color: 'green', size: 9, alpha: 1.0 }
+			};
+
+			const traceMissedSimilar = {
+				x: x_miss_similar,
+				y: y_miss_similar,
+				mode: 'markers',
+				name: 'Missed',
+				marker: { symbol: 'x', color: 'red', size: 9, alpha: .7 }
+			};
+
+			let simlayout = {
+				title: {
+					text: formattedTitle,
+					font: {
+						size: 11,
+						color: 'white',
+						family: 'Courier New'
+					}
+				},
+				xaxis: {
+					range: [-250, 250],
+					tickfont: {
+						color: 'white',
+						family: 'Courier New',
+						size: 8
+					}
+				},
+				yaxis: {
+					range: [0, 470],
+					tickfont: {
+						color: 'white',
+						family: 'Courier New',
+						size: 8
+					},
+					showline: true,
+					linewidth: 1,
+					color: 'white'
+	
+				},
+				width: 400,
+				height: 250,
+				plot_bgcolor: '#1E1E1E',
+				paper_bgcolor: '#1E1E1E',
+				showlegend: false,
+				showgrid: false
+			};
+			Plotly.react(`similarShotChart-${index}`, [traceMissedSimilar, traceMadeSimilar], simlayout);
+		});
+
+		// Open shotchart sidebar if not already open
+		openSCBar();
+	}
+	
+
+
+	// function calculateDistance(shot1, shot2) {
+	// 	const dx = shot1.loc_x - shot2.loc_x;
+	// 	const dy = shot1.loc_y - shot2.loc_y;
+	// 	const flagDifference = shot1.shot_made_flag !== shot2.shot_made_flag ? 50 : 0; // Penalty for different shot_made_flag
+	// 	return Math.sqrt(dx * dx + dy * dy) + flagDifference;
+	// }
+
+	// function calculateTotalDistance(targetShots, chartShots) {
+	// 	let distance = 0;
+	// 	const maxLength = Math.max(targetShots.length, chartShots.length);
+	// 	const penaltyPerExtraShot = 100; // Arbitrary value, adjust as needed
+	
+	// 	for (let i = 0; i < maxLength; i++) {
+	// 		if (i < targetShots.length && i < chartShots.length) {
+	// 			// Both shot charts have a shot at this index
+	// 			distance += calculateDistance(targetShots[i], chartShots[i]);
+	// 		} else {
+	// 			// One of the shot charts doesn't have a shot at this index
+	// 			distance += penaltyPerExtraShot;
+	// 		}
+	// 	}
+	
+	// 	return distance;
+	// }
+	
+	// // Modified KNN function
+	// function findKNearestShotCharts(targetShotChart, shotChartData, k) {
+	// 	const distances = shotChartData.all_shots.map(chart => {
+	// 		return { chart, distance: calculateTotalDistance(targetShotChart, chart.shots) };
+	// 	});
+	
+	// 	// Sort by distance
+	// 	distances.sort((a, b) => a.distance - b.distance);
+	
+	// 	// Return top k shot charts
+	// 	return distances.slice(1, k).map(d => d.chart);
+	// }
+
+	// Binning function
+	function binShot(x, y) {
+		const distanceFromHoop = Math.sqrt(x * x + y * y);
+		const distanceFromArcCenter = Math.abs(y - 140);
+
+		if (y <= 140 && x < 0) return "left corner 3";
+		if (y <= 140 && x > 0) return "right corner 3";
+		if (distanceFromArcCenter >= 220 && x < 0) return "left 3s";
+		if (distanceFromArcCenter >= 220 && x > 0) return "right 3s";
+		if (distanceFromHoop <= 60) return "paint";
+		if (y <= 190) {
+			if (x < -70) return "left midrange";
+			if (x > 70) return "right midrange";
+			return "top of the key";
+		}
+		return "deep 2";
+	}
+
+	// Binning a shot chart and converting counts to percentages
+	function binShotChart(shots) {
+		const bins = {
+			"left corner 3": 0,
+			"right corner 3": 0,
+			"left 3s": 0,
+			"right 3s": 0,
+			"paint": 0,
+			"left midrange": 0,
+			"right midrange": 0,
+			"top of the key": 0,
+			"deep 2": 0
+		};
+
+		shots.forEach(shot => {
+			const bin = binShot(shot.loc_x, shot.loc_y);
+			bins[bin]++;
+		});
+
+		const totalShots = shots.length;
+		for (const bin in bins) {
+			bins[bin] = (bins[bin] / totalShots) * 100; // Convert counts to percentages
+		}
+
+		return bins;
+	}
+
+	// Calculate similarity between two shot charts using percentage distributions
+	function calculateSimilarity(binnedTarget, binnedChart) {
+		let distance = 0;
+
+		for (const bin in binnedTarget) {
+			distance += Math.abs(binnedTarget[bin] - binnedChart[bin]);
+		}
+
+		return distance;
+	}
+
+
+	// Find k nearest shot charts
+	function findKNearestShotCharts(targetShots, allShotCharts, k) {
+		const binnedTarget = binShotChart(targetShots);
+		const distances = [];
+
+		allShotCharts.all_shots.forEach(chart => {
+			const binnedChart = binShotChart(chart.shots);
+			const distance = calculateSimilarity(binnedTarget, binnedChart);
+			distances.push({ chart, distance });
+		});
+
+		distances.sort((a, b) => a.distance - b.distance);
+
+		return distances.slice(1, k).map(d => d.chart);
+	}
+
 
 
 });
@@ -403,4 +743,56 @@ function openGlossary() {
 
 function closeGlossary() {
 	document.getElementById("glossarySidebar").style.width = "0";
+}
+
+function openSCBar() {
+    let bar = document.getElementById("shotchartBar");
+    if (bar.style.height === "0px" || bar.style.height === "") {
+        bar.style.height = "361px";
+    }
+}
+
+
+function closeSCBar() {
+	document.getElementById("shotchartBar").style.height = "0";
+}
+
+function startLoadingAnimation() {
+	let loadingMessage = "Loading data";
+	let dots = "";
+	
+	// Clear any existing interval
+	clearInterval(loadingInterval);
+	
+	// Start a new interval
+	loadingInterval = setInterval(() => {
+	  dots = dots.length < 3 ? dots + "." : "";
+	  document.getElementById('targetShotChart').innerHTML = loadingMessage + dots;
+	}, 300); // Update every 300 milliseconds
+}
+
+function stopLoadingAnimation() {
+	clearInterval(loadingInterval);
+	document.getElementById("targetShotChart").innerHTML = "";
+}
+
+function formatTitle(season, groupName) {
+    const maxLength = 50; // Adjust this value based on your needs
+    let title = season + ': ' + groupName;
+
+    if (title.length > maxLength) {
+        // Split the group name by dashes
+        const parts = groupName.split(' - ');
+
+        // Find the middle index to split the title
+        const middleIndex = Math.floor(parts.length / 2);
+
+        // Construct the new group name with a line break
+        const newGroupName = parts.slice(0, middleIndex).join(' - ') + '<br>' + parts.slice(middleIndex).join(' - ');
+
+        // Update the title
+        title = season + ': ' + newGroupName;
+    }
+
+    return title;
 }

@@ -622,43 +622,117 @@ $(document).ready(function() {
 	
 
 
-	function calculateDistance(shot1, shot2) {
-		const dx = shot1.loc_x - shot2.loc_x;
-		const dy = shot1.loc_y - shot2.loc_y;
-		const flagDifference = shot1.shot_made_flag !== shot2.shot_made_flag ? 50 : 0; // Penalty for different shot_made_flag
-		return Math.sqrt(dx * dx + dy * dy) + flagDifference;
+	// function calculateDistance(shot1, shot2) {
+	// 	const dx = shot1.loc_x - shot2.loc_x;
+	// 	const dy = shot1.loc_y - shot2.loc_y;
+	// 	const flagDifference = shot1.shot_made_flag !== shot2.shot_made_flag ? 50 : 0; // Penalty for different shot_made_flag
+	// 	return Math.sqrt(dx * dx + dy * dy) + flagDifference;
+	// }
+
+	// function calculateTotalDistance(targetShots, chartShots) {
+	// 	let distance = 0;
+	// 	const maxLength = Math.max(targetShots.length, chartShots.length);
+	// 	const penaltyPerExtraShot = 100; // Arbitrary value, adjust as needed
+	
+	// 	for (let i = 0; i < maxLength; i++) {
+	// 		if (i < targetShots.length && i < chartShots.length) {
+	// 			// Both shot charts have a shot at this index
+	// 			distance += calculateDistance(targetShots[i], chartShots[i]);
+	// 		} else {
+	// 			// One of the shot charts doesn't have a shot at this index
+	// 			distance += penaltyPerExtraShot;
+	// 		}
+	// 	}
+	
+	// 	return distance;
+	// }
+	
+	// // Modified KNN function
+	// function findKNearestShotCharts(targetShotChart, shotChartData, k) {
+	// 	const distances = shotChartData.all_shots.map(chart => {
+	// 		return { chart, distance: calculateTotalDistance(targetShotChart, chart.shots) };
+	// 	});
+	
+	// 	// Sort by distance
+	// 	distances.sort((a, b) => a.distance - b.distance);
+	
+	// 	// Return top k shot charts
+	// 	return distances.slice(1, k).map(d => d.chart);
+	// }
+
+	// Binning function
+	function binShot(x, y) {
+		const distanceFromHoop = Math.sqrt(x * x + y * y);
+		const distanceFromArcCenter = Math.abs(y - 140);
+
+		if (y <= 140 && x < 0) return "left corner 3";
+		if (y <= 140 && x > 0) return "right corner 3";
+		if (distanceFromArcCenter >= 220 && x < 0) return "left 3s";
+		if (distanceFromArcCenter >= 220 && x > 0) return "right 3s";
+		if (distanceFromHoop <= 60) return "paint";
+		if (y <= 190) {
+			if (x < -70) return "left midrange";
+			if (x > 70) return "right midrange";
+			return "top of the key";
+		}
+		return "deep 2";
 	}
 
-	function calculateTotalDistance(targetShots, chartShots) {
-		let distance = 0;
-		const maxLength = Math.max(targetShots.length, chartShots.length);
-		const penaltyPerExtraShot = 100; // Arbitrary value, adjust as needed
-	
-		for (let i = 0; i < maxLength; i++) {
-			if (i < targetShots.length && i < chartShots.length) {
-				// Both shot charts have a shot at this index
-				distance += calculateDistance(targetShots[i], chartShots[i]);
-			} else {
-				// One of the shot charts doesn't have a shot at this index
-				distance += penaltyPerExtraShot;
-			}
+	// Binning a shot chart and converting counts to percentages
+	function binShotChart(shots) {
+		const bins = {
+			"left corner 3": 0,
+			"right corner 3": 0,
+			"left 3s": 0,
+			"right 3s": 0,
+			"paint": 0,
+			"left midrange": 0,
+			"right midrange": 0,
+			"top of the key": 0,
+			"deep 2": 0
+		};
+
+		shots.forEach(shot => {
+			const bin = binShot(shot.loc_x, shot.loc_y);
+			bins[bin]++;
+		});
+
+		const totalShots = shots.length;
+		for (const bin in bins) {
+			bins[bin] = (bins[bin] / totalShots) * 100; // Convert counts to percentages
 		}
-	
+
+		return bins;
+	}
+
+	// Calculate similarity between two shot charts using percentage distributions
+	function calculateSimilarity(binnedTarget, binnedChart) {
+		let distance = 0;
+
+		for (const bin in binnedTarget) {
+			distance += Math.abs(binnedTarget[bin] - binnedChart[bin]);
+		}
+
 		return distance;
 	}
-	
-	// Modified KNN function
-	function findKNearestShotCharts(targetShotChart, shotChartData, k) {
-		const distances = shotChartData.all_shots.map(chart => {
-			return { chart, distance: calculateTotalDistance(targetShotChart, chart.shots) };
+
+
+	// Find k nearest shot charts
+	function findKNearestShotCharts(targetShots, allShotCharts, k) {
+		const binnedTarget = binShotChart(targetShots);
+		const distances = [];
+
+		allShotCharts.all_shots.forEach(chart => {
+			const binnedChart = binShotChart(chart.shots);
+			const distance = calculateSimilarity(binnedTarget, binnedChart);
+			distances.push({ chart, distance });
 		});
-	
-		// Sort by distance
+
 		distances.sort((a, b) => a.distance - b.distance);
-	
-		// Return top k shot charts
+
 		return distances.slice(1, k).map(d => d.chart);
 	}
+
 
 
 });

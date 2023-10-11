@@ -124,10 +124,12 @@ def nbaSubmit():
 @app.route('/getShotChart', methods=['POST'])
 def getShotChart():
     if request.method == "POST":
-        # season = str(request.form['season'])
-        # group_quantity = float(request.form['groupquantity']);
-        season = '2022-23'
-        group_quantity = 5
+        
+        group_quantity = float(request.form['groupquantity'])
+        season = str(request.form['season'])
+
+        # season = '2022-23'
+        # group_quantity = 5
         client = bigquery.Client()
         query = f"""
             SELECT group_id, group_name, shots

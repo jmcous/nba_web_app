@@ -1,5 +1,5 @@
 # nba_web_app
-Available online at https://justin.fan
+Available online at https://justin.fan (no longer available as of August 2024)
 
 To run locally:
 1) run 'pip install -r requirements.txt'
